@@ -1,0 +1,55 @@
+get:
+  tags: [ validation ]
+  summary: parameter validation
+  parameters:
+    - name: required
+      in: query
+      required: true
+      type: boolean
+    - name: string
+      in: query
+      required: false
+      type: string
+    - name: number
+      in: query
+      required: false
+      type: number
+    - name: boolean
+      in: query
+      required: false
+      type: boolean
+    - name: numberArray
+      in: query
+      required: false
+      type: array
+      items:
+        type: integer
+    - name: stringArray
+      in: query
+      required: false
+      type: array
+      items:
+        type: string
+  responses:
+    200:
+      schema:
+        $ref: "#/definitions/SuccessResponse"
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"
+post:
+  tags: [ validation ]
+  summary: response validation
+  parameters:
+    - name: some_name_dont_matter
+      in: body
+      required: true
+      schema:
+        type: object
+  responses:
+    200:
+      schema:
+        $ref: "#/definitions/SuccessResponse"
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"

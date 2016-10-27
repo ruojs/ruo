@@ -1,0 +1,23 @@
+#header {
+    -webkit-transition: opacity .5s;
+    transition: opacity .5s;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    height: 80px;
+    margin-bottom: 24px;
+    padding: 0 4%;
+    width: 100%;
+}
+
+#header span {
+    float: right;
+    font-size: 16px;
+    font-family: Raleway,Hiragino Sans GB,sans-serif;
+    height: 80px;
+    line-height: 80px;
+    text-transform: uppercase;
+}
+
+#title span {
+    float: left;
+}

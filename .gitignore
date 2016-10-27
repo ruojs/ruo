@@ -1,0 +1,12 @@
+.idea
+.vscode
+
+*.log
+*.out
+.nyc_output
+coverage
+dist
+
+node_modules
+.npmrc
+packages/ruo-ui/dist/assets/bundle.min.js

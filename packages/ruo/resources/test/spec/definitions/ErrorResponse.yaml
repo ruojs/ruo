@@ -1,0 +1,14 @@
+required:
+  - name
+  - message
+properties:
+  name:
+    type: string
+  status:
+    type: integer
+  field:
+    type: string
+    example: bucket_name
+  message:
+    type: string
+    example: bucket not found

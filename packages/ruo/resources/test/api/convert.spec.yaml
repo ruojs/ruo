@@ -1,0 +1,42 @@
+post:
+  tags: [ validation ]
+  summary: parameter validation
+  parameters:
+    - name: string
+      in: query
+      required: false
+      type: string
+    - name: number
+      in: query
+      required: false
+      type: number
+    - name: boolean
+      in: formData
+      required: false
+      type: boolean
+    - name: numberArray
+      in: formData
+      required: false
+      type: array
+      items:
+        type: integer
+    - name: stringArray
+      in: formData
+      required: false
+      type: array
+      items:
+        type: string
+  responses:
+    200:
+      schema:
+        required:
+          - query
+          - body
+        properties:
+          query:
+            type: object
+          body:
+            type: object
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"

@@ -1,0 +1,6 @@
+required:
+  - username
+properties:
+  username:
+    type: string
+    example: "Jack"

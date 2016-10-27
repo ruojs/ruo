@@ -1,0 +1,82 @@
+{
+  "name": "ruo-cli",
+  "version": "1.0.2",
+  "description": "Command line utility for ruo projects",
+  "bin": {
+    "ruo": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    ".babelrc"
+  ],
+  "scripts": {
+    "lint": "standard",
+    "prebuild": "rm -rf dist",
+    "build": "babel src -d dist --copy-files",
+    "watch": "babel src -d dist --copy-files -w",
+    "test": "NODE_ENV=test babel-node ./node_modules/.bin/_mocha --reporter spec $npm_package_options_mocha 'src/**/*-test.js'",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/upyun/ruo/tree/master/packages/ruo-cli"
+  },
+  "keywords": [
+    "ruo"
+  ],
+  "options": {
+    "mocha": "--colors --full-trace"
+  },
+  "author": "zhongchiyu@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "ruo": "^1.0.2",
+    "ruo-ui": "^1.0.0",
+    "babel-cli": "^6.10.1",
+    "babel-eslint": "^6.0.4",
+    "babel-plugin-transform-async-to-generator": "^6.8.0",
+    "babel-plugin-transform-es2015-classes": "^6.9.0",
+    "babel-plugin-transform-es2015-destructuring": "^6.8.0",
+    "babel-plugin-transform-es2015-parameters": "^6.9.0",
+    "babel-plugin-transform-es2015-spread": "^6.8.0",
+    "babel-plugin-transform-strict-mode": "^6.8.0",
+    "babel-register": "^6.9.0",
+    "chai": "^3.5.0",
+    "chalk": "^1.1.3",
+    "debug": "^2.2.0",
+    "del": "^2.2.1",
+    "eslint-plugin-babel": "^3.2.0",
+    "glob": "^7.1.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-changed": "^1.3.2",
+    "gulp-cli": "^1.2.1",
+    "gulp-debug": "^2.1.2",
+    "gulp-eslint": "^2.0.0",
+    "gulp-load-plugins": "^1.2.2",
+    "handlebars": "^4.0.5",
+    "inquirer": "^1.0.2",
+    "istanbul": "^0.4.5",
+    "lodash": "^4.16.4",
+    "merge-stream": "^1.0.0",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
+    "nodemon": "^1.9.2",
+    "update-notifier": "^1.0.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2",
+    "standard": "^8.4.0"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": [
+      "dist"
+    ],
+    "envs": [
+      "mocha"
+    ]
+  }
+}

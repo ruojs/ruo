@@ -1,0 +1,13 @@
+get:
+  tags: [ security ]
+  summary: 多种可选鉴权方式
+  security:
+    - token: []
+    - basic: []
+  responses:
+    200:
+      schema:
+        $ref: "#/definitions/UserResponse"
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"

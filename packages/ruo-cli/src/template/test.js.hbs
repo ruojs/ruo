@@ -1,0 +1,37 @@
+const {expect} = require('chai');
+
+const plugins = require('PLEASE CALCULATE AUTH PLUGIN PATH FOR SELF FOR NOW');
+
+const auth_plugin = plugins.auth();
+const ENDPOINT = '{{uri}}';
+
+describe(ENDPOINT, () => {
+  before(async () => {
+    await auth_plugin.before();
+  });
+  after(async () => {
+    await auth_plugin.after();
+  });
+
+  {{#each methods}}
+  describe('{{@key}}', () => {
+    it('should respond with default Error', async () => {
+      const {body} = await api.{{@key}}(ENDPOINT)
+        .use(auth_plugin.plugin())
+        .query({
+          stringName: 'DATA GOES HERE',
+        })
+        .expect(500);
+    });
+
+    it('should respond with 200 Success', async () => {
+      const {body} = await api.{{@key}}(ENDPOINT)
+        .use(auth_plugin.plugin())
+        .query({
+          stringName: 'DATA GOES HERE',
+        })
+        .expect(200);
+    });
+  });
+  {{/each}}
+});

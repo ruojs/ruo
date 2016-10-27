@@ -1,0 +1,4 @@
+name: bucket_name
+in: query
+type: string
+required: true

@@ -1,0 +1,37 @@
+get:
+  tags: [ validation ]
+  summary: error handling
+  parameters:
+    - name: message
+      in: query
+      required: true
+      type: string
+  responses:
+    200:
+      schema:
+        $ref: "#/definitions/SuccessResponse"
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"
+  x-errors:
+    BadRequest:
+      status: 400
+      message: Local invalid parameter error
+    UnknownException:
+      status: 500
+      message: Something bad happened
+delete:
+  tags: [ validation ]
+  summary: error handling
+  parameters:
+    - name: message
+      in: query
+      required: true
+      type: string
+  responses:
+    200:
+      schema:
+        $ref: "#/definitions/SuccessResponse"
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"

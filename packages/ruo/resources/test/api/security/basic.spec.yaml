@@ -1,0 +1,12 @@
+get:
+  tags: [ security ]
+  summary: basic authorization
+  security:
+    - basic: []
+  responses:
+    200:
+      schema:
+        $ref: "#/definitions/UserResponse"
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"

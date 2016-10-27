@@ -1,0 +1,35 @@
+get:
+  tags: [ demo ]
+  summary: delayed response
+  parameters:
+    - name: string
+      in: query
+      description: The name of the person to whom to say hello
+      required: true
+      type: string
+  responses:
+    200:
+      schema:
+        $ref: "#/definitions/SuccessResponse"
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"
+post:
+  tags: [ demo ]
+  summary: post request
+  parameters:
+    - name: string
+      in: query
+      required: true
+      type: string
+    - name: number
+      in: query
+      required: true
+      type: number
+  responses:
+    200:
+      schema:
+        $ref: "#/definitions/SuccessResponse"
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"

@@ -1,0 +1,66 @@
+swagger: "2.0"
+info:
+  version: 0.0.0
+  title: Example RESTful API
+# during dev, should point to your local machine
+host: localhost:8088
+# basePath prefixes all resource paths
+basePath: /
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+  - application/x-www-form-urlencoded
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+tags:
+  - name: demo
+    description: demo
+  - name: validation
+    description: validation
+  - name: security
+    description: security
+securityDefinitions:
+  token:
+    type: apiKey
+    name: token
+    in: header
+    x-securityHandler: token
+    description: |
+      通过在请求头中增加 Token 鉴权
+
+      ```
+      Authorization: Bearer token
+      ```
+
+  basic:
+    type: basic
+    x-securityHandler: basic
+    description: |
+      Basic 鉴权有两种方式
+
+      ## 增加 Authorization 请求头
+
+      通过增加 Authorization 请求头来表明客户端身份，请求头的格式
+
+      ```
+      Authorization: Basic <IDENTIFY>
+      ```
+
+      计算 `IDENTIFY` 的算法
+
+      ```
+      IDENTIFY = base64(username + ':' + password)
+      ```
+
+      ## URL encoding
+
+      使用 URL encoding 很简单，`curl` 或支持的浏览器会将其转换为 `Authorization` 请求头
+
+      ```
+      https://Aladdin:OpenSesame@www.example.com/index.html
+      ```
