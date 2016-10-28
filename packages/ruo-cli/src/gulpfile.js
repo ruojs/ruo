@@ -15,7 +15,7 @@ const {config} = require('ruo')
 const helpers = require('./helpers')
 
 // if source equals to target, project don't require compilation and related tasks
-const COMPILED = config.source === config.target
+const isGeneratorStyle = config.source === config.target
 const RUO_DIR = path.join(__dirname, '..')
 const BABELRC = JSON.parse(fs.readFileSync(`${RUO_DIR}/.babelrc`, 'utf8'))
 BABELRC.plugins = BABELRC.plugins.map((name) => {
@@ -23,14 +23,21 @@ BABELRC.plugins = BABELRC.plugins.map((name) => {
 })
 
 gulp.task('clean', () => {
-  if (!COMPILED) {
+  if (!isGeneratorStyle) {
     del.sync(config.target)
   }
 })
 
 gulp.task('t', ['test'])
 gulp.task('test', () => {
-  const MOCHA_OPTIONS = `--colors --timeout 20000 ${config.test.bootload}`.split(' ')
+  const MOCHA_OPTIONS = '--colors --timeout 20000'.split(' ')
+  if (isGeneratorStyle) {
+    MOCHA_OPTIONS.push('-r')
+    MOCHA_OPTIONS.push('co-mocha')
+  }
+  if (config.test.bootload) {
+    MOCHA_OPTIONS.push(config.test.bootload)
+  }
   const TEST_FILES = glob.sync(`${config.target}/**/*${config.suffix.test}`)
   let args = ['./node_modules/.bin/_mocha']
   args = args.concat(MOCHA_OPTIONS)
@@ -111,21 +118,21 @@ function cleanup (srcPath) {
   del.sync(destFilePath)
 }
 gulp.task('build', ['clean'], () => {
-  if (!COMPILED) {
+  if (!isGeneratorStyle) {
     return merge(
       copy(`${config.source}/**/*.!(js)`),
       compile(`${config.source}/**/*.js`, 'build'))
   }
 })
 gulp.task('cached-build', () => {
-  if (!COMPILED) {
+  if (!isGeneratorStyle) {
     return merge(
       copy(`${config.source}/**/*.!(js)`, true),
       compile(`${config.source}/**/*.js`, 'build', true))
   }
 })
 gulp.task('build-watch', ['cached-build'], () => {
-  if (!COMPILED) {
+  if (!isGeneratorStyle) {
     gulp.watch(`${config.source}/**/*`, (event) => {
       debug('build watch', event)
 
