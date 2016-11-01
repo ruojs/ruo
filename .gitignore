@@ -5,8 +5,7 @@
 *.out
 .nyc_output
 coverage
-dist
+packages/*/dist/**/*
 
 node_modules
 .npmrc
-packages/ruo-ui/dist/assets/bundle.min.js
