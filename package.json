@@ -5,9 +5,13 @@
     "ghooks": "^1.2.1",
     "lerna": "2.0.0-beta.30"
   },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "test": "lerna run lint && lerna run test"
+  },
   "config": {
     "ghooks": {
-      "pre-commit": "lerna run lint && lerna run test"
+      "pre-commit": "npm test"
     }
   }
 }

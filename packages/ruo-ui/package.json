@@ -51,7 +51,8 @@
     "watchify": "^3.7.0",
     "webpack": "1.13.0",
     "webpack-dev-server": "1.14.1",
-    "whatwg-fetch": "^1.0.0"
+    "whatwg-fetch": "^1.0.0",
+    "standard": "^8.4.0"
   },
   "standard": {
     "globals": [
