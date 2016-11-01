@@ -65,7 +65,7 @@ export default class App extends React.Component {
 
     const {title, version} = spec.info
     return <div className='container'>
-      <Header title={title} version={version} />
+      <Header title={title} version={version} spec={spec} />
       <div className='main-wrapper'>
         <Row>
           <Col span={6}>
