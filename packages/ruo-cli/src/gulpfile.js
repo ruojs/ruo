@@ -159,6 +159,7 @@ function serve () {
   for (let key in serveEnv) {
     env = `${env} ${key}=${serveEnv[key]}`
   }
+  debug('env', env)
   const watches = config.watch.map((s) => '-w ' + s).join(' ')
   const args = `-e js,yaml ${watches} -w ${config.target} --exec ${env} ${config.exec}`.split(' ')
   debug('serve args', args)
