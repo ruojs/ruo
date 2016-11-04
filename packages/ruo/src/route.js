@@ -13,7 +13,9 @@ module.exports = route
 function route (app, api) {
   if (config.shadow) {
     glob.sync(`**/*${config.suffix.code}`, {cwd: config.target}).forEach((file) => {
-      const handlers = require(joinPath(config.target, file))
+      const codePath = joinPath(config.target, file)
+      debug('require', codePath)
+      const handlers = require(codePath)
       _.forEach(handlers, (handler, endpoint) => {
         addHandler(app, api, endpoint, handler)
       })
@@ -38,6 +40,9 @@ function addHandler (app, api, endpoint, handler) {
     } else {
       handler[method] = wrapRoute(handler[method])
     }
-    app[method](`${api.basePathPrefix}${endpoint}`, handler[method])
+    endpoint = endpoint.replace(/\{/g, ':').replace(/\}/g, '')
+    endpoint = `${api.basePathPrefix}${endpoint}`
+    debug('mount handler', method, endpoint)
+    app[method](endpoint, handler[method])
   }
 }
