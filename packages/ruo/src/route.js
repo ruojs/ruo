@@ -40,9 +40,9 @@ function addHandler (app, api, endpoint, handler) {
     } else {
       handler[method] = wrapRoute(handler[method])
     }
-    endpoint = endpoint.replace(/\{/g, ':').replace(/\}/g, '')
-    endpoint = `${api.basePathPrefix}${endpoint}`
-    debug('mount handler', method, endpoint)
-    app[method](endpoint, handler[method])
+    let path = endpoint.replace(/\{/g, ':').replace(/\}/g, '')
+    path = `${api.basePathPrefix}${path}`
+    debug('mount handler', method, path)
+    app[method](path, handler[method])
   }
 }
