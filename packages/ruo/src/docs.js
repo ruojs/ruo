@@ -27,19 +27,19 @@ const index = `
 </html>`
 
 module.exports = (app, definition) => {
-  if (config.env === 'development') {
+  if (config.env !== 'production') {
     app.use(cors())
+
+    // return full spec definition
+    app.get(config.specPath, (req, res) => {
+      res.send(patternPropertiesToProperties(_.clone(definition)))
+    })
+
+    app.get(config.docPath, (req, res, next) => {
+      res.send(index)
+    })
+    app.use(joinPath(config.docPath, 'assets'), serveStatic(joinPath(__dirname, '../resources/ruo-ui')))
   }
-
-  // return full spec definition
-  app.get(config.specPath, (req, res) => {
-    res.send(patternPropertiesToProperties(_.clone(definition)))
-  })
-
-  app.get(config.docPath, (req, res, next) => {
-    res.send(index)
-  })
-  app.use(joinPath(config.docPath, 'assets'), serveStatic(joinPath(__dirname, '../resources/ruo-ui')))
 }
 
 function patternPropertiesToProperties (schema) {
