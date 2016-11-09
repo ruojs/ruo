@@ -12,7 +12,7 @@ module.exports = route
 
 function route (app, api) {
   if (config.shadow) {
-    glob.sync(`**/*${config.suffix.code}`, {cwd: config.target}).forEach((file) => {
+    glob.sync(`**/*${config.suffix.code}`, {cwd: config.target}).sort().forEach((file) => {
       const codePath = joinPath(config.target, file)
       debug('require', codePath)
       const handlers = require(codePath)
