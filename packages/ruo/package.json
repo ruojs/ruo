@@ -1,6 +1,6 @@
 {
   "name": "ruo",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "RESTful api framework for Nodejs",
   "main": "dist/index.js",
   "repository": {
