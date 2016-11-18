@@ -87,7 +87,11 @@ class Operation {
     return results
   }
 
-  validateResponse (res, obj) {
+  validateResponse (req, res, obj) {
+    if (req.method.toLowerCase() === 'head') {
+      return
+    }
+
     const realStatusCode = res ? String(res.statusCode) : 'default'
     let responseDef = _.find(this.definition.responses, (response, responseCode) => {
       return responseCode === realStatusCode

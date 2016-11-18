@@ -9,7 +9,7 @@ module.exports = {
   response () {
     return (req, res, obj) => {
       if (req.swagger.operation) {
-        const error = req.swagger.operation.validateResponse(res, obj)
+        const error = req.swagger.operation.validateResponse(req, res, obj)
 
         if (error) {
           if (config.env === 'test' || config.env === 'development') {
