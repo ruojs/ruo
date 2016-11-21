@@ -241,6 +241,8 @@ exports.convertValue = (schema, options, value) => {
           if (!isDate && !isDateTime) {
             err = new TypeError('Not a valid ' + schema.format + ' string: ' + originalValue)
             err.code = 'INVALID_FORMAT'
+          } else if (isDate) {
+            value = new Date(value + ' 00:00:00')
           } else {
             value = new Date(value)
           }
