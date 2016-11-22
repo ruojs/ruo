@@ -59,7 +59,8 @@ function getErrorData (err, req, globalErrorCodeTable) {
   // only use local error inside handler
   if (isProcessing && localErrorCodeTable[err.name]) {
     // generate local error name
-    name = `${req.path}.${req.method.toLowerCase()}.${err.name}`
+    const path = req.path.endsWith('/') ? req.path.slice(0, -1) : req.path
+    name = `${path}.${req.method.toLowerCase()}.${err.name}`
     data = localErrorCodeTable[err.name]
   } else {
     name = err.name
