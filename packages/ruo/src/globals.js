@@ -6,13 +6,13 @@ const moder = require('moder')
 const _ = require('lodash')
 const Waterline = require('waterline')
 const pascalcase = require('uppercamelcase')
-const thunkify = require('thunkify')
+const promiseify = require('denodeify')
 
 const config = require('./config')
 const {isTest} = require('./translate')
 
 const waterline = new Waterline()
-const initialize = thunkify(waterline.initialize.bind(waterline))
+const initialize = promiseify(waterline.initialize.bind(waterline))
 
 module.exports = async ({model: modelConfig} = {}) => {
   let models = {}
@@ -39,7 +39,7 @@ module.exports = async ({model: modelConfig} = {}) => {
     }, {})
     // TODO: just pick one of the model, any better way?
     const Model = models[Object.keys(models)[0]]
-    models.query = thunkify(Model.query.bind(Model))
+    models.query = promiseify(Model.query.bind(Model))
     debug('models', Object.keys(models))
   } catch (err) {
     if (err.code !== 'ENOENT') {
