@@ -53,7 +53,6 @@ module.exports = async ({model: modelConfig} = {}) => {
     const serviceDir = path.join(config.target, 'service')
     fs.statSync(serviceDir)
     services = moder(serviceDir, {
-      naming: 'pascal',
       lazy: false,
       filter: isTest
     })
