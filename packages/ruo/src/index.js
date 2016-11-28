@@ -1,9 +1,12 @@
+const _ = require('lodash')
+
 const config = require('./config')
 const {Swagger, parseAsync} = require('./swagger')
 const translate = require('./translate')
 const mws = require('./middleware')
 const {HttpError, ParameterError} = require('./error')
 const logger = require('./logger')
+const initGlobalsAsync = require('./globals')
 const Pipeline = require('./pipeline')
 const {wrapRoute, wrapMiddleware} = require('./utility')
 
@@ -20,9 +23,10 @@ exports.wrapRoute = wrapRoute
 exports.wrapMiddleware = wrapMiddleware
 
 async function createApplicationAsync (app, options = {}) {
-  const {logger: {file, logstash, sentry} = {}, dynamicDefinition = {}, securityMiddlewares = {}, errorHandler} = options
+  const {logger: {file, logstash, sentry} = {}, dynamicDefinition = {}, securityMiddlewares = {}, errorHandler, model} = options
 
   logger.initialize({file, logstash, sentry})
+  _.assign(exports, await initGlobalsAsync({model}))
 
   try {
     const api = await Swagger.createAsync(dynamicDefinition)
@@ -63,7 +67,7 @@ async function createApplicationAsync (app, options = {}) {
     // request validation
     app.use(mws.validation.request())
     // security handler
-    app.use(mws.security(api, securityMiddlewares, errorHandler))
+    app.use(mws.security(api, securityMiddlewares))
     // dynamic swagger defined route
     app.use(mws.debug.preHandler())
     app.use(mws.api(api))
