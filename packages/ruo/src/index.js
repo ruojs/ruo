@@ -4,8 +4,6 @@ const translate = require('./translate')
 const mws = require('./middleware')
 const {HttpError, ParameterError} = require('./error')
 const logger = require('./logger')
-const route = require('./route')
-const docs = require('./docs')
 const Pipeline = require('./pipeline')
 const {wrapRoute, wrapMiddleware} = require('./utility')
 
@@ -58,7 +56,7 @@ async function createApplicationAsync (app, options = {}) {
     // binding request context
     app.use(mws.context(config.target + '/context'))
     // setup swagger documentation
-    docs(app, api.definition)
+    app.use(mws.docs(api.definition))
     app.use(mws.switch())
     // request & response logging
     app.use(mws.debug.request())
@@ -68,7 +66,7 @@ async function createApplicationAsync (app, options = {}) {
     app.use(mws.security(api, securityMiddlewares, errorHandler))
     // dynamic swagger defined route
     app.use(mws.debug.preHandler())
-    route(app, api)
+    app.use(mws.api(api))
     // 404
     app.use(() => {
       throw new HttpError('NotFound')

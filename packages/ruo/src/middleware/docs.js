@@ -1,10 +1,11 @@
 const joinPath = require('path').join
 
+const Router = require('router')
 const cors = require('cors')
 const serveStatic = require('serve-static')
 const _ = require('lodash')
 
-const config = require('./config')
+const config = require('../config')
 
 const index = `
 <!DOCTYPE html>
@@ -26,20 +27,22 @@ const index = `
   </body>
 </html>`
 
-module.exports = (app, definition) => {
+module.exports = (definition) => {
+  const router = Router()
   if (config.env !== 'production') {
-    app.use(cors())
+    router.use(cors())
 
     // return full spec definition
-    app.get(config.specPath, (req, res) => {
+    router.get(config.specPath, (req, res) => {
       res.send(patternPropertiesToProperties(_.clone(definition)))
     })
 
-    app.get(config.docPath, (req, res, next) => {
+    router.get(config.docPath, (req, res, next) => {
       res.send(index)
     })
-    app.use(joinPath(config.docPath, 'assets'), serveStatic(joinPath(__dirname, '../resources/ruo-ui')))
+    router.use(joinPath(config.docPath, 'assets'), serveStatic(joinPath(__dirname, '../resources/ruo-ui')))
   }
+  return router
 }
 
 function patternPropertiesToProperties (schema) {
