@@ -25,7 +25,8 @@ module.exports = async ({model: modelConfig} = {}) => {
       lazy: false,
       filter: isTest,
       init (model) {
-        waterline.loadCollection(Waterline.Collection.extend(model))
+        // FIXME: why modelConfig.defaults not working?
+        waterline.loadCollection(Waterline.Collection.extend(_.merge({}, modelConfig.defaults, model)))
       }
     })
     for (let name in modelConfig.adapters) {
