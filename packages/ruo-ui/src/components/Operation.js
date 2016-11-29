@@ -3,7 +3,7 @@ import qs from 'querystring'
 import React from 'react'
 import Debug from 'debug'
 import { Link } from 'react-router'
-import { Table, Collapse } from 'antd'
+import { Collapse } from 'antd'
 
 import marked from '../marked'
 import AppStore from '../stores/AppStore'
@@ -56,11 +56,11 @@ export default class Operation extends React.Component {
       data = schema
     } else {
       examples = utility.fieldsToJson(parameters)
-      const properties = {};
+      const properties = {}
       parameters.map((parameter, index) => {
         properties[parameter.name] = parameter
-      });
-      data = { properties };
+      })
+      data = { properties }
     }
 
     if (operation.method === 'get' || operation.method === 'delete') {
@@ -78,7 +78,7 @@ export default class Operation extends React.Component {
         <TreeView schema={data} />
         {examples}
       </div>
-    );
+    )
   }
 
   _renderResponses (responses) {
@@ -108,7 +108,7 @@ export default class Operation extends React.Component {
           <TreeView schema={response.schema} />
           <Example examples={examples} />
         </Panel>
-      );
+      )
     })
   }
 
