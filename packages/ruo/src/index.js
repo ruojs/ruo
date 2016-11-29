@@ -27,6 +27,7 @@ async function createApplicationAsync (app, options = {}) {
 
   logger.initialize({file, logstash, sentry})
   _.assign(exports, await initGlobalsAsync({model}))
+  exports.app = app
 
   try {
     const api = await Swagger.createAsync(dynamicDefinition)
