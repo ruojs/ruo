@@ -2,17 +2,19 @@ import qs from 'querystring'
 
 import React from 'react'
 import Debug from 'debug'
-import {Link} from 'react-router'
-import { Table } from 'antd'
+import { Link } from 'react-router'
+import { Collapse } from 'antd'
 
 import marked from '../marked'
 import AppStore from '../stores/AppStore'
 import Example from './Example'
 import utility from '../utility'
+import TreeView from './TreeView'
 
 import './Operation.css'
 
 const debug = Debug('swagger-renderer:components')
+const Panel = Collapse.Panel
 
 export default class Operation extends React.Component {
   _renderAuthorizations (securityDefinitions, security) {
@@ -36,38 +38,7 @@ export default class Operation extends React.Component {
         授权
       </p>
     }
-
     return <p>无须授权</p>
-  }
-
-  _renderType (schema) {
-    switch (schema.type) {
-      case 'array': {
-        let type = schema.type
-        if (schema.items) {
-          type = `${type} [${schema.items.type}]`
-        }
-        return type
-      }
-      case 'string': {
-        let type = schema.type
-        if (schema.enum) {
-          type = <div>
-            {type}
-            <p>可选值</p>
-            <ul style={{listStyle: 'disc'}}>
-              {
-                schema.enum.map((item) => <li key={item}>{item}</li>)
-              }
-            </ul>
-          </div>
-        }
-        return type
-      }
-      default: {
-        return schema.type
-      }
-    }
   }
 
   _renderParameters (parameters, operation) {
@@ -77,76 +48,34 @@ export default class Operation extends React.Component {
 
     let examples
     let schema
-    let data = []
+    let data = {}
     if (parameters[0].in === 'body') {
       const parameter = parameters[0]
       schema = parameter.schema
       examples = parameter['x-examples'] || utility.schemaToJson(schema)
-      if (schema.type === 'object') {
-        const required = schema.required || []
-        for (let name in schema.properties) {
-          const property = schema.properties[name]
-          data.push({
-            key: name,
-            name: name,
-            required: String(required.indexOf(name) !== -1),
-            type: this._renderType(property),
-            description: property.description
-          })
-        }
-      } else if (schema.type === 'array') {
-        data.push({
-          key: '',
-          name: '',
-          required: 'true',
-          type: this._renderType(schema),
-          description: schema.description
-        })
-      }
+      data = schema
     } else {
       examples = utility.fieldsToJson(parameters)
-      data = parameters.map((parameter, index) => {
-        return {
-          key: index,
-          name: parameter.name,
-          required: String(parameter.required),
-          type: this._renderType(parameter),
-          description: parameter.description
-        }
+      const properties = {}
+      parameters.map((parameter, index) => {
+        properties[parameter.name] = parameter
       })
+      data = { properties }
     }
 
     if (operation.method === 'get' || operation.method === 'delete') {
       examples = <pre><code>{operation.path}?{qs.stringify(examples)}</code></pre>
     } else {
-      examples = <Example examples={examples} schema={schema} />
+      examples = <Example examples={examples} />
     }
     examples = <div>
       <h4>样例</h4>
       {examples}
     </div>
 
-    const columns = [{
-      title: '参数',
-      dataIndex: 'name',
-      width: '20%'
-    }, {
-      title: '必须',
-      dataIndex: 'required',
-      width: '10%',
-      render: text => (text === 'true' ? <span className='required'>{text}</span> : text)
-    }, {
-      title: '类型',
-      dataIndex: 'type',
-      width: '10%'
-    }, {
-      title: '说明',
-      dataIndex: 'description',
-      render: text => <p dangerouslySetInnerHTML={{__html: marked(text)}} />
-    }]
     return (
       <div>
-        <Table columns={columns} dataSource={data} pagination={false} />
+        <TreeView schema={data} />
         {examples}
       </div>
     )
@@ -173,13 +102,13 @@ export default class Operation extends React.Component {
         status = `状态码 ${status}`
       }
 
-      return <div key={index}>
-        <p>
-          {status}
-        </p>
-        <p dangerouslySetInnerHTML={{__html: marked(response.description)}} />
-        <Example examples={examples} schema={response.schema} />
-      </div>
+      return (
+        <Panel header={status} key={index}>
+          <p dangerouslySetInnerHTML={{__html: marked(response.description)}} />
+          <TreeView schema={response.schema} />
+          <Example examples={examples} />
+        </Panel>
+      )
     })
   }
 
@@ -203,7 +132,11 @@ export default class Operation extends React.Component {
         {this._renderParameters(operation.parameters, operation)}
 
         <h2>响应</h2>
-        <div>{this._renderResponses(operation.responses)}</div>
+        <div>
+          <Collapse bordered={false}>
+            {this._renderResponses(operation.responses)}
+          </Collapse>
+        </div>
 
         <p>
           错误返回值与错误代码，参见<Link to={{pathname: '/appendix', query: {handler: 'x-errors'}}}>错误代码说明</Link>
