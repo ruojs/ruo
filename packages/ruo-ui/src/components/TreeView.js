@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import classNames from 'classnames';
-import { Icon } from 'antd';
+import classNames from 'classnames'
+import { Icon } from 'antd'
 import marked from '../marked'
 import './TreeView.css'
 
@@ -13,21 +13,21 @@ class TreeView extends Component {
       expands: {}
     }
   }
-  handleParamClick(key) {
+  handleParamClick (key) {
     let newExpands = this.state.expands
     newExpands[key] = !newExpands[key]
     this.setState({
       newExpands
-    });
+    })
   }
-  renderType(schema) {
+  renderType (schema) {
     let { type } = schema
     const { items } = schema
     if (type) {
       if (type === 'array' && items) {
         return (
           <span>
-            <span className="param-type array">{items.type}</span>
+            <span className='param-type array'>{items.type}</span>
             {this.renderRange.bind(this)(items)}
             {this.renderPattern.bind(this)(items)}
           </span>
@@ -35,7 +35,7 @@ class TreeView extends Component {
       } else {
         return (
           <span>
-            <span className="param-type">{type}</span>
+            <span className='param-type'>{type}</span>
             {this.renderRange.bind(this)(schema)}
             {this.renderPattern.bind(this)(schema)}
           </span>
@@ -43,42 +43,42 @@ class TreeView extends Component {
       }
     }
   }
-  renderRange(schema) {
+  renderRange (schema) {
     const { maxLength = '', minLength = '' } = schema
     if (minLength || maxLength) {
       return (
-        <span className="param-range">
+        <span className='param-range'>
           {`[ ${minLength} .. ${maxLength} ] characters `}
         </span>
       )
     }
   }
-  renderPattern(schema) {
+  renderPattern (schema) {
     const { pattern } = schema
     if (pattern) {
-      return <span className="param-pattern">{pattern}</span>
+      return <span className='param-pattern'>{pattern}</span>
     }
   }
-  renderEnum(enumItems) {
+  renderEnum (enumItems) {
     if (enumItems) {
       return (
-        <div className="param-enum">
+        <div className='param-enum'>
           {
             enumItems.map((item, index) => {
-              return <span key={index} className="param-enum-value">{(typeof item === 'string') ? `'${item}'` : item }</span>
+              return <span key={index} className='param-enum-value'>{(typeof item === 'string') ? `'${item}'` : item }</span>
             })
           }
         </div>
       )
     }
   }
-  renderSchema(prop, key) {
+  renderSchema (prop, key) {
     const { items, properties, type } = prop
     if (items && items.type === 'object' && type) {
       return (
-        <tr className="param-schema">
-          <td colSpan="2">
-            <div className="param-schema-general">
+        <tr className='param-schema'>
+          <td colSpan='2'>
+            <div className='param-schema-general'>
               {this.renderTree.bind(this)(items, type)}
             </div>
           </td>
@@ -86,9 +86,9 @@ class TreeView extends Component {
       )
     } else if (properties && type) {
       return (
-        <tr key={key} className="param-schema">
-          <td colSpan="2">
-            <div className="param-schema-general">
+        <tr key={key} className='param-schema'>
+          <td colSpan='2'>
+            <div className='param-schema-general'>
               {this.renderTree.bind(this)(prop, type)}
             </div>
           </td>
@@ -96,13 +96,13 @@ class TreeView extends Component {
       )
     }
   }
-  renderTree(schema, parentType) {
+  renderTree (schema, parentType) {
     let { properties = {} } = schema
     const { patternProperties, required = [] } = schema
 
     // Combine pattern properties
     if (patternProperties) {
-      properties = Object.assign({}, properties, patternProperties);
+      properties = Object.assign({}, properties, patternProperties)
     }
 
     // Set Required attribute
@@ -118,8 +118,8 @@ class TreeView extends Component {
       }
       return (
         <div>
-          <span className="param-type">Array [{items['type']}]</span>
-          <span className="param-required">Required</span>
+          <span className='param-type'>Array [{items['type']}]</span>
+          <span className='param-required'>Required</span>
         </div>
       )
     }
@@ -131,39 +131,42 @@ class TreeView extends Component {
 
     return (
       <table className={wrapCls}>
-      <tbody>
-      {
+        <tbody>
+          {
         Object.keys(properties).map((prop, index) => {
-          const key = `${index}_${prop}`;
+          const key = `${index}_${prop}`
 
-          const { items, properties: subProps } = properties[prop];
+          const { items, properties: subProps } = properties[prop]
 
           const paramCls = classNames({
             'param': true,
             'last': index === Object.keys(properties).length - 1,
             'complex': (!!items && items['type'] === 'object') || !!subProps,
             'expanded': this.state.expands[key]
-          });
-          
+          })
+
           return ([
             <tr key={key} className={paramCls}>
-              <td className="param-name">
-                <span className="param-name-wrap" onClick={this.handleParamClick.bind(this, key)}>
-                  <span className="param-name-content">{prop}</span>
-                  {(!!items && items['type'] === 'object') || !!subProps ?
-                    <Icon type="down" /> : ''}
+              <td className='param-name'>
+                <span className='param-name-wrap' onClick={this.handleParamClick.bind(this, key)}>
+                  <span className='param-name-content'>{prop}</span>
+                  {
+                    (!!items && items['type'] === 'object') || !!subProps
+                      ? <Icon type='down' />
+                      : ''
+                  }
                 </span>
               </td>
-              <td className="param-info">
+              <td className='param-info'>
                 <div>
                   {this.renderType.bind(this)(properties[prop])}
                   {
-                    properties[prop]['required'] ? <span className="param-required">Required</span> : ''
+                    properties[prop]['required'] ? <span className='param-required'>Required</span> : ''
                   }
                   {this.renderEnum.bind(this)(properties[prop]['enum'])}
                 </div>
                 {
-                  properties[prop]['description'] ? <div className="param-description"><p dangerouslySetInnerHTML={{__html: marked(properties[prop]['description'])}} /></div> : ''
+                  properties[prop]['description'] ? <div className='param-description'><p dangerouslySetInnerHTML={{__html: marked(properties[prop]['description'])}} /></div> : ''
                 }
               </td>
             </tr>,
@@ -171,16 +174,16 @@ class TreeView extends Component {
           ])
         })
       }
-      </tbody>
+        </tbody>
       </table>
     )
   }
-  render() {
+  render () {
     let { schema } = this.props
     return (
-        <div>
-          {this.renderTree.bind(this)(schema)}
-        </div>
+      <div>
+        {this.renderTree.bind(this)(schema)}
+      </div>
     )
   }
 }
