@@ -47,19 +47,19 @@ class Header extends React.Component {
   }
   handleApiSelect (key) {
     const [method, path] = key.split(' ')
-    window.location.href = `/#/operation?method=${method.toLowerCase()}&path=${encodeURIComponent(path)}`
+    window.location.href = `${window.location.pathname}#/operation?method=${method.toLowerCase()}&path=${encodeURIComponent(path)}`
   }
   render () {
     return (
       <header id='header' className='clearfix'>
         <Row>
-          <Col span={12}>
+          <Col span={22}>
             <a id='title' href={SWAGGER_RENDERER.basename}>
               <span>{this.props.title} </span>
             </a>
             <SearchInput placeholder='API 搜索' handleChange={this.handleApiSearch.bind(this)} handleSelect={this.handleApiSelect.bind(this)} style={{ width: 300, marginLeft: 30 }} />
           </Col>
-          <Col span={12}>
+          <Col span={2}>
             <span>{this.props.version} </span>
           </Col>
         </Row>

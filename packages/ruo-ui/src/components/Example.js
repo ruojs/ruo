@@ -5,7 +5,7 @@ import gist from 'react-syntax-highlighter/dist/styles/github-gist'
 
 export default class Example extends React.Component {
   render () {
-    let {examples} = this.props
+    let { examples } = this.props
     if (typeof examples === 'object') {
       examples = JSON.stringify(examples, null, '  ')
     }

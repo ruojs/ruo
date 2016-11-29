@@ -99,9 +99,10 @@ export default class Sidebar extends React.Component {
     )
   }
 
-  _toggle (isOpen, event) {
+  _toggle (openKeys) {
+    const latestOpenKey = openKeys.find(key => this.state.current.resource !== key)
     this.setState({
-      current: {resource: isOpen ? event.key : null}
+      current: Object.assign({}, this.state.current, { resource: latestOpenKey })
     })
   }
 
@@ -120,8 +121,7 @@ export default class Sidebar extends React.Component {
     return (
       <Menu
         openKeys={[this.state.current.resource]}
-        onOpen={this._toggle.bind(this, true)}
-        onClose={this._toggle.bind(this, false)}
+        onOpenChange={this._toggle.bind(this)}
         selectedKeys={[this.state.current.operation]}
         mode='inline'>
         {this._renderResources(resources)}
