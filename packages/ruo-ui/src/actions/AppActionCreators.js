@@ -1,9 +1,9 @@
 import Debug from 'debug'
-import {resolveRefs as resolve} from 'json-refs'
+import { resolveRefs as resolve } from 'json-refs'
 import _ from 'lodash'
 
 import Dispatcher from '../dispatcher'
-import {ActionTypes} from '../constants/AppConstants.js'
+import { ActionTypes } from '../constants/AppConstants.js'
 
 const debug = Debug('swagger-renderer:actions')
 

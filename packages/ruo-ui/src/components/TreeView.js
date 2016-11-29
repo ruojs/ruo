@@ -45,10 +45,22 @@ class TreeView extends Component {
   }
   renderRange (schema) {
     const { maxLength = '', minLength = '' } = schema
-    if (minLength || maxLength) {
+    if (minLength && maxLength) {
       return (
         <span className='param-range'>
           {`[ ${minLength} .. ${maxLength} ] characters `}
+        </span>
+      )
+    } else if (minLength && !maxLength) {
+      return (
+        <span className='param-range'>
+          {`>= ${minLength} characters `}
+        </span>
+      )
+    } else if (!minLength && maxLength) {
+      return (
+        <span className='param-range'>
+          {`<= ${maxLength} characters `}
         </span>
       )
     }
@@ -161,7 +173,7 @@ class TreeView extends Component {
                 <div>
                   {this.renderType.bind(this)(properties[prop])}
                   {
-                    properties[prop]['required'] ? <span className='param-required'>Required</span> : ''
+                    properties[prop]['required'] === 'true' ? <span className='param-required'>Required</span> : ''
                   }
                   {this.renderEnum.bind(this)(properties[prop]['enum'])}
                 </div>

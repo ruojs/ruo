@@ -5,7 +5,7 @@ import Sidebar from './Sidebar'
 import Index from './Index'
 import AppStore from '../stores/AppStore'
 
-import { Row, Col } from 'antd'
+import { Row, Col, Icon } from 'antd'
 import $ from 'jquery'
 
 import './App.css'
@@ -78,7 +78,9 @@ export default class App extends React.Component {
           </Col>
         </Row>
       </div>
-      <div id='scroll-top' onClick={this._scrollToTop.bind(this)} />
+      <div id='scroll-top' onClick={this._scrollToTop.bind(this)}>
+        <Icon type="arrow-up" />
+      </div>
     </div>
   }
 }
