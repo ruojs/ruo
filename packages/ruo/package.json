@@ -68,7 +68,8 @@
     "build": "babel src -d dist --copy-files",
     "watch": "babel src -d dist --copy-files -w",
     "lint": "standard",
-    "test": "NODE_ENV=test nyc --reporter html --reporter text ./node_modules/.bin/mocha $npm_package_options_mocha 'src/**/*.test.js' 'resources/test/**/*.test.js'",
+    "test": "NODE_ENV=test babel-node ./node_modules/.bin/_mocha --reporter spec $npm_package_options_mocha 'src/**/*.test.js' 'resources/test/**/*.test.js'",
+    "cover": "NODE_ENV=test nyc --reporter html --reporter text ./node_modules/.bin/mocha $npm_package_options_mocha 'src/**/*.test.js' 'resources/test/**/*.test.js'",
     "prepublish": "npm run build"
   },
   "options": {
