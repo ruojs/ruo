@@ -25,4 +25,9 @@ describe('swagger/path', () => {
     const operationObject = pathObject.getOperation(method)
     expect(operationObject.method).to.eql(method)
   })
+
+  it('should return get operation object if method is head', async () => {
+    const operationObject = pathObject.getOperation('head')
+    expect(operationObject.method).to.eql('get')
+  })
 })

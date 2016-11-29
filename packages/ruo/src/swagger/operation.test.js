@@ -47,7 +47,7 @@ describe('swagger/operation', () => {
   it('should validate response by response object and response data', () => {
     let errors
 
-    errors = operationObject.validateResponse({
+    errors = operationObject.validateResponse({method: 'get'}, {
       statusCode: 200
     }, [{
       name: 'someName',
@@ -55,7 +55,7 @@ describe('swagger/operation', () => {
     }])
     expect(errors).to.eql(undefined)
 
-    errors = operationObject.validateResponse({
+    errors = operationObject.validateResponse({method: 'get'}, {
       statusCode: 200
     }, [{
       photoUrls: ['http://examples.com/abc.png']

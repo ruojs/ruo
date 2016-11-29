@@ -100,7 +100,9 @@ class Parameter {
         }
         break
       case 'query':
-        _.set(req.query, this.name, value)
+        if (value != null) {
+          _.set(req.query, this.name, value)
+        }
         break
 
       // no default

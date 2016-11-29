@@ -133,25 +133,25 @@ gulp.task('cached-build', () => {
 })
 gulp.task('build-watch', ['cached-build'], () => {
   if (!isGeneratorStyle) {
-    gulp.watch(`${config.source}/**/*`, (event) => {
-      debug('build watch', event)
+    plugins.watch(`${config.source}/**/*`, (vinyl) => {
+      debug('build watch', vinyl.path, vinyl.event)
 
-      if (event.type === 'deleted') {
-        return cleanup(event.path)
+      if (vinyl.event === 'unlink') {
+        return cleanup(vinyl.path)
       }
 
-      let ext = path.extname(event.path)
+      let ext = path.extname(vinyl.path)
       if (ext === '.js') {
-        compile(event.path, 'change')
+        compile(vinyl.path, 'change')
       } else {
-        copy(event.path)
+        copy(vinyl.path)
       }
     })
   }
 })
 
 let serveEnv = {
-  NODE_ENV: 'development',
+  NODE_ENV: process.env.NODE_ENV || 'development',
   DEBUG: config.name
 }
 function serve () {
@@ -159,6 +159,7 @@ function serve () {
   for (let key in serveEnv) {
     env = `${env} ${key}=${serveEnv[key]}`
   }
+  debug('env', env)
   const watches = config.watch.map((s) => '-w ' + s).join(' ')
   const args = `-e js,yaml ${watches} -w ${config.target} --exec ${env} ${config.exec}`.split(' ')
   debug('serve args', args)

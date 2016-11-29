@@ -12,7 +12,7 @@ module.exports = parseAsync
 
 async function parseAsync ({root = config.target, dynamicDefinition = {}} = {}) {
   const definition = YAML.load(fs.readFileSync(root + '/spec/swagger.yaml'))
-  definition.paths = glob.sync(`**/*${config.suffix.spec}`, {cwd: root}).reduce((paths, file) => {
+  definition.paths = glob.sync(`**/*${config.suffix.spec}`, {cwd: root}).sort().reduce((paths, file) => {
     const location = path.join(root, file)
     const yaml = YAML.load(fs.readFileSync(location, 'utf8'))
     if (config.shadow) {

@@ -17,11 +17,20 @@ class Path {
   }
 
   getOperation (method) {
-    return _.find(this.operationObjects, (operationObject) => {
-      if (operationObject.method === method.toLowerCase()) {
+    method = method.toLowerCase()
+    let getOperationObject
+    let object = _.find(this.operationObjects, (operationObject) => {
+      if (operationObject.method === 'get') {
+        getOperationObject = operationObject
+      }
+      if (operationObject.method === method) {
         return operationObject
       }
     })
+    if (!object && getOperationObject) {
+      object = getOperationObject
+    }
+    return object
   }
 }
 

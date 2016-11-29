@@ -8,7 +8,8 @@ const handlebars = require('handlebars')
 const debug = require('debug')('ruo-cli')
 const {config, parseAsync, translate} = require('ruo')
 
-const EXAMPLE_SPEC = fs.readFileSync(path.join(__dirname, 'template/spec.yaml.hbs'), 'utf8')
+const templatePath = config.templatePath || path.join(__dirname, 'template')
+const EXAMPLE_SPEC = fs.readFileSync(path.join(templatePath, 'spec.hbs'), 'utf8')
 
 let spec
 let root = config.source
@@ -154,14 +155,14 @@ function generateSpecFile (uri) {
 }
 
 function generateCodeFile (uri) {
-  let source = fs.readFileSync(path.join(__dirname, '/template/code.js.hbs'), 'utf8')
+  let source = fs.readFileSync(path.join(templatePath, 'code.hbs'), 'utf8')
   let template = handlebars.compile(source)
   let result = template(spec.paths[uri])
   write(toCode(uri), result)
 }
 
 function generateTestFile (uri) {
-  let source = fs.readFileSync(path.join(__dirname, '/template/test.js.hbs'), 'utf8')
+  let source = fs.readFileSync(path.join(templatePath, 'test.hbs'), 'utf8')
   let template = handlebars.compile(source)
   let result = template({
     uri: uri,

@@ -40,6 +40,7 @@ config.root = process.cwd()
 config.source = path.join(config.root, config.source)
 config.target = path.join(config.root, config.target)
 config.env = process.env.NODE_ENV || 'development'
+config.templatePath = config.templatePath && path.join(config.root, config.templatePath)
 debug('config', config)
 
 module.exports = config

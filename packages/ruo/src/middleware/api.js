@@ -3,19 +3,21 @@ const joinPath = require('path').join
 const debug = require('debug')('ruo')
 const glob = require('glob')
 const _ = require('lodash')
+const Router = require('router')
 
-const config = require('./config')
-const translate = require('./translate')
-const {wrapRoute, wrapMiddleware} = require('./utility')
+const config = require('../config')
+const translate = require('../translate')
+const {wrapRoute, wrapMiddleware} = require('../utility')
 
-module.exports = route
-
-function route (app, api) {
+module.exports = (api) => {
+  const router = Router()
   if (config.shadow) {
-    glob.sync(`**/*${config.suffix.code}`, {cwd: config.target}).forEach((file) => {
-      const handlers = require(joinPath(config.target, file))
+    glob.sync(`**/*${config.suffix.code}`, {cwd: config.target}).sort().forEach((file) => {
+      const codePath = joinPath(config.target, file)
+      debug('require', codePath)
+      const handlers = require(codePath)
       _.forEach(handlers, (handler, endpoint) => {
-        addHandler(app, api, endpoint, handler)
+        addHandler(router, api, endpoint, handler)
       })
     })
   } else {
@@ -23,9 +25,10 @@ function route (app, api) {
       const codePath = translate.toCode(endpoint, config.target + '/api')
       debug('require', codePath)
       const handler = require(codePath)
-      addHandler(app, api, endpoint, handler)
+      addHandler(router, api, endpoint, handler)
     }
   }
+  return router
 }
 
 function addHandler (app, api, endpoint, handler) {
@@ -38,6 +41,9 @@ function addHandler (app, api, endpoint, handler) {
     } else {
       handler[method] = wrapRoute(handler[method])
     }
-    app[method](`${api.basePathPrefix}${endpoint}`, handler[method])
+    let path = endpoint.replace(/\{/g, ':').replace(/\}/g, '')
+    path = `${api.basePathPrefix}${path}`
+    debug('mount handler', method, path)
+    app[method](path, handler[method])
   }
 }
