@@ -79,7 +79,7 @@ export default class App extends React.Component {
         </Row>
       </div>
       <div id='scroll-top' onClick={this._scrollToTop.bind(this)}>
-        <Icon type="arrow-up" />
+        <Icon type='arrow-up' />
       </div>
     </div>
   }
