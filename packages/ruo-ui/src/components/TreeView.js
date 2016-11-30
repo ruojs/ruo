@@ -119,7 +119,7 @@ class TreeView extends Component {
 
     // Set Required attribute
     for (let name in properties) {
-      properties[name].required = String(required.indexOf(name) !== -1)
+      properties[name].required = required.indexOf(name) !== -1
     }
 
     // If schema properties type is array
@@ -173,7 +173,7 @@ class TreeView extends Component {
                 <div>
                   {this.renderType.bind(this)(properties[prop])}
                   {
-                    properties[prop]['required'] === 'true' ? <span className='param-required'>Required</span> : ''
+                    properties[prop]['required'] ? <span className='param-required'>Required</span> : ''
                   }
                   {this.renderEnum.bind(this)(properties[prop]['enum'])}
                 </div>
