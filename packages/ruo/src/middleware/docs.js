@@ -40,7 +40,7 @@ module.exports = (definition) => {
     router.get(config.docPath, (req, res, next) => {
       res.send(index)
     })
-    router.use(joinPath(config.docPath, 'assets'), serveStatic(joinPath(__dirname, '../resources/ruo-ui')))
+    router.use(joinPath(config.docPath, 'assets'), serveStatic(joinPath(__dirname, '../../resources/ruo-ui')))
   }
   return router
 }
