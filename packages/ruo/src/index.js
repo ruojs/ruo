@@ -1,13 +1,12 @@
-const _ = require('lodash')
-
 const config = require('./config')
-const {Swagger, parseAsync} = require('./swagger')
 const translate = require('./translate')
+const Pipeline = require('./pipeline')
 const mws = require('./middleware')
-const {HttpError, ParameterError} = require('./error')
 const logger = require('./logger')
 const initGlobalsAsync = require('./globals')
-const Pipeline = require('./pipeline')
+const blueprint = require('./blueprint')
+const {parseAsync} = require('./swagger')
+const {HttpError, ParameterError} = require('./error')
 const {wrapRoute, wrapMiddleware} = require('./utility')
 
 exports.createApplicationAsync = createApplicationAsync
@@ -23,14 +22,24 @@ exports.wrapRoute = wrapRoute
 exports.wrapMiddleware = wrapMiddleware
 
 async function createApplicationAsync (app, options = {}) {
-  const {logger: {file, logstash, sentry} = {}, dynamicDefinition = {}, securityMiddlewares = {}, errorHandler, model} = options
-
-  logger.initialize({file, logstash, sentry})
-  _.assign(exports, await initGlobalsAsync({model}))
-  exports.app = app
-
   try {
-    const api = await Swagger.createAsync(dynamicDefinition)
+    const {
+      logger: {file, logstash, sentry} = {},
+      dynamicDefinition = {},
+      securityMiddlewares = {},
+      errorHandler,
+      model
+    } = options
+
+    logger.initialize({file, logstash, sentry})
+    const {models, services} = await initGlobalsAsync({model})
+    const api = await blueprint.initialize(dynamicDefinition, models)
+
+    // TODO: exports.test.api
+    exports.app = app
+    exports.api = api
+    exports.models = models
+    exports.services = services
 
     app.use((req, res, next) => {
       req.state = {
