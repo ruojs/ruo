@@ -26,7 +26,6 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 
 AppStore.dispatcherToken = Dispatcher.register((action) => {
   switch (action.type) {
-
     case ActionTypes.GET_SPEC:
       spec = action.spec
       AppStore.emitChange()

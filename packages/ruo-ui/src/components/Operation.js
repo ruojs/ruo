@@ -57,10 +57,14 @@ export default class Operation extends React.Component {
     } else {
       examples = utility.fieldsToJson(parameters)
       const properties = {}
+      const required = []
       parameters.map((parameter, index) => {
         properties[parameter.name] = parameter
+        if (parameter.required) {
+          required.push(parameter.name)
+        }
       })
-      data = { properties }
+      data = { properties, required }
     }
 
     if (operation.method === 'get' || operation.method === 'delete') {

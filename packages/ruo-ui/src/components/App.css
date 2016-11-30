@@ -38,6 +38,7 @@ div.main-container {
     border-radius: 4px;
     padding: 4px;
     display: none;
+    color: #ffffff;
     -webkit-transform: translateZ(0);
     transition: all .3s ease-out;
 }
@@ -51,35 +52,6 @@ div.main-container {
     -webkit-backface-visibility: hidden;
 }
 
-#scroll-top:before {
-    content: '';
-    height: 10px;
-    width: 10px;
-    display: block;
-    border: 3px solid #fff;
-    border-left-width: 0;
-    border-bottom-width: 0;
-    transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-    -moz-transform: rotate(-45deg);
-    -o-transform: rotate(-45deg);
-    -ms-transform: rotate(-45deg);
-    position: absolute;
-    top: 10px;
-    left: 15px;
-}
-
-#scroll-top:after {
-    content: '';
-    height: 16px;
-    width: 3px;
-    display: block;
-    background: #fff;
-    position: absolute;
-    top: 12px;
-    left: 19px;
-}
-
-#scroll-top:hover:after {
-    border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
+#scroll-top .anticon {
+    font-size: 20px;
 }

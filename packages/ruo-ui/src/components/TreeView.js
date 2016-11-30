@@ -45,10 +45,22 @@ class TreeView extends Component {
   }
   renderRange (schema) {
     const { maxLength = '', minLength = '' } = schema
-    if (minLength || maxLength) {
+    if (minLength && maxLength) {
       return (
         <span className='param-range'>
           {`[ ${minLength} .. ${maxLength} ] characters `}
+        </span>
+      )
+    } else if (minLength && !maxLength) {
+      return (
+        <span className='param-range'>
+          {`>= ${minLength} characters `}
+        </span>
+      )
+    } else if (!minLength && maxLength) {
+      return (
+        <span className='param-range'>
+          {`<= ${maxLength} characters `}
         </span>
       )
     }
@@ -107,7 +119,7 @@ class TreeView extends Component {
 
     // Set Required attribute
     for (let name in properties) {
-      properties[name].required = String(required.indexOf(name) !== -1)
+      properties[name].required = required.indexOf(name) !== -1
     }
 
     // If schema properties type is array
