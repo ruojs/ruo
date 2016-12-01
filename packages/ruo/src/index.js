@@ -3,16 +3,15 @@ const translate = require('./translate')
 const Pipeline = require('./pipeline')
 const mws = require('./middleware')
 const logger = require('./logger')
-const initGlobalsAsync = require('./globals')
+const globals = require('./globals')
 const blueprint = require('./blueprint')
 const {parseAsync} = require('./swagger')
 const {HttpError, ParameterError} = require('./error')
 const {wrapRoute, wrapMiddleware} = require('./utility')
 
 exports.createApplicationAsync = createApplicationAsync
-exports.HttpError = HttpError
 // backward compability
-exports.ResponseError = HttpError
+exports.ResponseError = exports.HttpError = HttpError
 exports.ParameterError = ParameterError
 exports.translate = translate
 exports.parseAsync = parseAsync
@@ -32,14 +31,17 @@ async function createApplicationAsync (app, options = {}) {
     } = options
 
     logger.initialize({file, logstash, sentry})
-    const {models, services} = await initGlobalsAsync({model})
+    const {models, services, middlewares} = await globals.initialize({model})
     const api = await blueprint.initialize(dynamicDefinition, models)
 
-    // TODO: exports.test.api
     exports.app = app
     exports.api = api
     exports.models = models
     exports.services = services
+    exports.middlewares = exports.mws = middlewares
+    if (rc.env === 'test') {
+      exports.test = require('./test').initialize(app, api)
+    }
 
     app.use((req, res, next) => {
       req.state = {

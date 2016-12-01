@@ -1,3 +1,6 @@
+/**
+ * Load middleware, service and api implementations
+ */
 const fs = require('fs')
 const path = require('path')
 
@@ -14,26 +17,39 @@ const {isTest} = require('./translate')
 const waterline = new Waterline()
 const initialize = promiseify(waterline.initialize.bind(waterline))
 
-module.exports = async ({model: modelConfig} = {}) => {
-  let models = {}
-  let services = {}
-  // load models
-  try {
-    const modelDir = path.join(rc.target, 'model')
-    fs.statSync(modelDir)
-    moder(modelDir, {
-      lazy: false,
-      filter: isTest,
-      init (model) {
-        // FIXME: why modelrc.defaults not working?
-        waterline.loadCollection(Waterline.Collection.extend(_.merge({}, modelConfig.defaults, model)))
+exports.initialize = async ({model: modelConfig} = {}) => {
+  const globals = {};
+  // load model, service and middleware
+  ['model', 'service', 'middleware'].forEach((type) => {
+    const name = type + 's'
+    globals[name] = {}
+    try {
+      const dir = path.join(rc.target, type)
+      fs.statSync(dir)
+      const modules = moder(dir, {
+        lazy: false,
+        filter: isTest
+      })
+      debug(type, Object.keys(modules))
+      globals[name] = modules
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        throw err
       }
+    }
+  })
+
+  // initialize models
+  if (modelConfig) {
+    _.forEach(globals.models, (model) => {
+      // FIXME: why modelrc.defaults not working?
+      waterline.loadCollection(Waterline.Collection.extend(_.merge({}, modelConfig.defaults, model)))
     })
     for (let name in modelConfig.adapters) {
       modelConfig.adapters[name] = require(modelConfig.adapters[name])
     }
     const ontology = await initialize(modelConfig)
-    models = _.reduce(ontology.collections, (obj, model, name) => {
+    const models = _.reduce(ontology.collections, (obj, model, name) => {
       name = pascalcase(name)
       obj[name] = model
       return obj
@@ -41,27 +57,8 @@ module.exports = async ({model: modelConfig} = {}) => {
     // TODO: just pick one of the model, any better way?
     const Model = models[Object.keys(models)[0]]
     models.query = promiseify(Model.query.bind(Model))
-    debug('models', Object.keys(models))
-  } catch (err) {
-    if (err.code !== 'ENOENT') {
-      throw err
-    }
+    globals.models = models
   }
 
-  // load services
-  try {
-    const serviceDir = path.join(rc.target, 'service')
-    fs.statSync(serviceDir)
-    services = moder(serviceDir, {
-      lazy: false,
-      filter: isTest
-    })
-    debug('services', Object.keys(services))
-  } catch (err) {
-    if (err.code !== 'ENOENT') {
-      throw err
-    }
-  }
-
-  return {models, services}
+  return globals
 }

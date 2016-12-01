@@ -112,6 +112,7 @@ exports.modelToJsonSchema = (definition) => {
 
 exports.createBlueprint = (paths, model) => {
   const resource = model.identity
+  const handlers = exports.createHandlers(model)
 
   // POST /resource
   _.set(paths, [`/${resource}`, 'post'], {
@@ -136,9 +137,7 @@ exports.createBlueprint = (paths, model) => {
         }
       }
     },
-    __handler__: function *create (req, res) {
-      res.status(201).send(yield model.create(req.body))
-    }
+    __handler__: handlers.create
   })
 
   // GET /resource
@@ -170,9 +169,7 @@ exports.createBlueprint = (paths, model) => {
         }
       }
     },
-    __handler__: function *find (req, res) {
-      res.send(yield model.find(req.query))
-    }
+    __handler__: handlers.find
   })
 
   // GET /resource/{id}
@@ -191,9 +188,7 @@ exports.createBlueprint = (paths, model) => {
         }
       }
     },
-    __handler__: function *findOne (req, res) {
-      res.send(yield model.findOne({id: req.params.id}))
-    }
+    __handler__: handlers.findOne
   })
 
   // PUT /resource/{id}
@@ -222,9 +217,7 @@ exports.createBlueprint = (paths, model) => {
         }
       }
     },
-    __handler__: function *update (req, res) {
-      res.send((yield model.update({id: req.params.id}, req.body))[0])
-    }
+    __handler__: handlers.update
   })
 
   // DELETE /resource/{id}
@@ -243,10 +236,28 @@ exports.createBlueprint = (paths, model) => {
         }
       }
     },
-    __handler__: function *destroy (req, res) {
-      res.send((yield model.destroy({id: req.params.id}))[0])
-    }
+    __handler__: handlers.destroy
   })
 
   return paths
+}
+
+exports.createHandlers = (model) => {
+  return {
+    *create (req, res) {
+      res.status(201).send(yield model.create(req.body))
+    },
+    *find (req, res) {
+      res.send(yield model.find(req.query))
+    },
+    *findOne (req, res) {
+      res.send(yield model.findOne({id: req.params.id}))
+    },
+    *update (req, res) {
+      res.send((yield model.update({id: req.params.id}, req.body))[0])
+    },
+    *destroy (req, res) {
+      res.send((yield model.destroy({id: req.params.id}))[0])
+    }
+  }
 }
