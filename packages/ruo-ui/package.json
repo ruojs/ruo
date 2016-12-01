@@ -6,7 +6,7 @@
   "scripts": {
     "build": "NODE_ENV=production webpack -p --config webpack.production.config.js --progress --profile --colors",
     "dev": "webpack-dev-server --progress --profile --colors --hot --inline",
-    "lint": "standard",
+    "lint": "standard --fix",
     "test": "babel-node ./node_modules/.bin/_mocha --colors src/**/*-test.js",
     "prepublish": "npm run build"
   },

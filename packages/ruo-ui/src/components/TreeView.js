@@ -119,7 +119,13 @@ class TreeView extends Component {
 
     // Set Required attribute
     for (let name in properties) {
-      properties[name].required = required.indexOf(name) !== -1
+      if (typeof required === 'boolean') {
+        properties[name].required = required
+      } else if (Array.isArray(required)) {
+        properties[name].required = required.indexOf(name) !== -1
+      } else {
+        properties[name].required = false
+      }
     }
 
     // If schema properties type is array
