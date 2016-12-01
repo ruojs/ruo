@@ -13,7 +13,7 @@
 * [ruo-cli](/packages/ruo-cli)
 * [ruo-ui](/packages/ruo-ui)
 
-## Author
+## Authors
 
 * [CatTail](https://github.com/cattail/)
 * [yuzi](https://github.com/yuzima)
