@@ -12,7 +12,7 @@ const pascalcase = require('uppercamelcase')
 const promiseify = require('denodeify')
 
 const rc = require('./rc')
-const {isTest} = require('./translate')
+const {isTest} = require('./utility')
 
 const waterline = new Waterline()
 const initialize = promiseify(waterline.initialize.bind(waterline))

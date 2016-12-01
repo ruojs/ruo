@@ -1,5 +1,5 @@
 const rc = require('./rc')
-const translate = require('./translate')
+const utility = require('./utility')
 const Pipeline = require('./pipeline')
 const mws = require('./middleware')
 const logger = require('./logger')
@@ -7,18 +7,17 @@ const globals = require('./globals')
 const blueprint = require('./blueprint')
 const {parseAsync} = require('./swagger')
 const {HttpError, ParameterError} = require('./error')
-const {wrapRoute, wrapMiddleware} = require('./utility')
 
 exports.createApplicationAsync = createApplicationAsync
 // backward compability
 exports.ResponseError = exports.HttpError = HttpError
 exports.ParameterError = ParameterError
-exports.translate = translate
+exports.translate = exports.utility = utility
 exports.parseAsync = parseAsync
 exports.logger = logger
 exports.rc = rc
-exports.wrapRoute = wrapRoute
-exports.wrapMiddleware = wrapMiddleware
+exports.wrapRoute = utility.wrapRoute
+exports.wrapMiddleware = utility.wrapMiddleware
 
 async function createApplicationAsync (app, options = {}) {
   try {
@@ -40,7 +39,7 @@ async function createApplicationAsync (app, options = {}) {
     exports.services = services
     exports.middlewares = exports.mws = middlewares
     if (rc.env === 'test') {
-      exports.test = require('./test').initialize(app, api)
+      exports.test = require('./supertest').initialize(app, api)
     }
 
     app.use((req, res, next) => {

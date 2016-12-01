@@ -9,7 +9,7 @@ exports.initialize = function (app, api) {
   app = defaults(supertest(app))
   app.on('request', (request) => {
     const urlObject = url.parse(request.url)
-    urlObject.pathname = api.basePath + urlObject.pathname
+    urlObject.pathname = api.basePathPrefix + urlObject.pathname
     request.url = url.format(urlObject)
   })
   test.app = app

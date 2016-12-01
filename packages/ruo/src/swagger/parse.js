@@ -6,7 +6,7 @@ const glob = require('glob')
 const _ = require('lodash')
 
 const rc = require('../rc')
-const translate = require('../translate')
+const utility = require('../utility')
 
 module.exports = parseAsync
 
@@ -18,7 +18,7 @@ async function parseAsync ({root = rc.target, dynamicDefinition = {}} = {}) {
     if (rc.shadow) {
       _.assign(paths, yaml)
     } else {
-      const name = translate.fromSpec(file)
+      const name = utility.fromSpec(file)
       paths[name] = yaml
     }
     return paths

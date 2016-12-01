@@ -7,7 +7,7 @@ const {resolveRefs: resolve} = require('json-refs')
 
 const rc = require('./rc')
 const {Swagger} = require('./swagger')
-const translate = require('./translate')
+const utility = require('./utility')
 const parseAsync = require('./swagger/parse')
 const validateAsync = require('./swagger/definition-validator')
 
@@ -60,7 +60,7 @@ exports.initialize = async (dynamicDefinition, models) => {
         exports.bindHandlers(definition, handlers, path)
       })
     } else {
-      const path = translate.fromCode(file)
+      const path = utility.fromCode(file)
       exports.bindHandlers(definition, mod, path)
     }
   })
