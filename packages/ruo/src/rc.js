@@ -1,46 +1,50 @@
-const fs = require('fs')
 const path = require('path')
 
-const _ = require('lodash')
+const rc = require('rc')
 const debug = require('debug')('ruo')
 
-const rc = _.merge({
-  name: 'ruo',
-  source: 'src',
-  exec: 'node',
-  shadow: false,
-  specPath: '/',
-  docPath: '/doc',
-  target: undefined,
-  watch: [],
-  test: {
-    bootload: ''
-  },
-  cover: {
-    bootload: ''
-  },
-  lint: {
-    include: [
-      'src/**/*.js'
-    ]
-  },
-  suffix: {
-    code: '.code.js',
-    test: '.test.js',
-    spec: '.spec.yaml'
-  },
-  doc: {
+function loadStaticConfig () {
+  const config = rc('ruo', {
+    name: 'ruo',
+    source: 'src',
+    exec: 'node',
+    shadow: false,
+    specPath: '/',
+    docPath: '/doc',
+    target: undefined,
+    watch: [],
+    test: {
+      bootload: ''
+    },
+    cover: {
+      bootload: ''
+    },
+    lint: {
+      include: [
+        'src/**/*.js'
+      ]
+    },
+    suffix: {
+      code: '.code.js',
+      test: '.test.js',
+      spec: '.spec.yaml'
+    },
+    doc: {
+    }
+  })
+
+  if (!config.target) {
+    config.target = config.source
   }
-}, JSON.parse(fs.readFileSync(path.join(process.cwd(), '.ruorc'))))
-
-if (!rc.target) {
-  rc.target = rc.source
+  config.root = process.cwd()
+  config.source = path.join(config.root, config.source)
+  config.target = path.join(config.root, config.target)
+  config.env = process.env.NODE_ENV || 'development'
+  config.templatePath = config.templatePath && path.join(config.root, config.templatePath)
+  debug('rc', config)
+  return config
 }
-rc.root = process.cwd()
-rc.source = path.join(rc.root, rc.source)
-rc.target = path.join(rc.root, rc.target)
-rc.env = process.env.NODE_ENV || 'development'
-rc.templatePath = rc.templatePath && path.join(rc.root, rc.templatePath)
-debug('rc', rc)
 
-module.exports = rc
+module.exports = loadStaticConfig()
+// used in unittest
+module.exports.loadStaticConfig = loadStaticConfig
