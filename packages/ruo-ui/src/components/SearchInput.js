@@ -24,10 +24,11 @@ class SearchInput extends Component {
   _handleSubmit () {
     this.state.data.length ? this._handleSelect(this.state.data[0].value) : message.error('未找到匹配项')
   }
-  _handleFocusBlur (e) {
-    this.setState({
-      focus: e.target === document.activeElement
-    })
+  _handleFocus () {
+    this.setState({ focus: true })
+  }
+  _handleBlur () {
+    this.setState({ focus: false })
   }
   render () {
     const btnCls = classNames({
@@ -51,8 +52,8 @@ class SearchInput extends Component {
             showArrow={false}
             filterOption={false}
             onChange={this._handleChange.bind(this)}
-            onFocus={this._handleFocusBlur.bind(this)}
-            onBlur={this._handleFocusBlur.bind(this)}
+            onFocus={this._handleFocus.bind(this)}
+            onBlur={this._handleBlur.bind(this)}
             onSelect={this._handleSelect.bind(this)}
             style={{top: 26}}
           >
