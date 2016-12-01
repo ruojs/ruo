@@ -1,4 +1,4 @@
-const config = require('./config')
+const rc = require('./rc')
 const translate = require('./translate')
 const Pipeline = require('./pipeline')
 const mws = require('./middleware')
@@ -17,7 +17,7 @@ exports.ParameterError = ParameterError
 exports.translate = translate
 exports.parseAsync = parseAsync
 exports.logger = logger
-exports.config = config
+exports.rc = rc
 exports.wrapRoute = wrapRoute
 exports.wrapMiddleware = wrapMiddleware
 
@@ -68,7 +68,7 @@ async function createApplicationAsync (app, options = {}) {
     //
 
     // binding request context
-    app.use(mws.context(config.target + '/context'))
+    app.use(mws.context(rc.target + '/context'))
     // setup swagger documentation
     app.use(mws.docs(api.definition))
     app.use(mws.switch())

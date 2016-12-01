@@ -5,7 +5,7 @@ const cors = require('cors')
 const serveStatic = require('serve-static')
 const _ = require('lodash')
 
-const config = require('../config')
+const rc = require('../rc')
 
 const index = `
 <!DOCTYPE html>
@@ -19,28 +19,28 @@ const index = `
     <script>
         var SWAGGER_RENDERER = {
             basename: '/',
-            spec: '${config.specPath}'
+            spec: '${rc.specPath}'
         }
     </script>
-    <script src="${config.docPath}/assets/bundle.min.js"></script>
-    <link rel="stylesheet" href="${config.docPath}/assets/highlight-github-gist.css">
+    <script src="${rc.docPath}/assets/bundle.min.js"></script>
+    <link rel="stylesheet" href="${rc.docPath}/assets/highlight-github-gist.css">
   </body>
 </html>`
 
 module.exports = (definition) => {
   const router = Router()
-  if (config.env !== 'production') {
+  if (rc.env !== 'production') {
     router.use(cors())
 
     // return full spec definition
-    router.get(config.specPath, (req, res) => {
+    router.get(rc.specPath, (req, res) => {
       res.send(patternPropertiesToProperties(_.clone(definition)))
     })
 
-    router.get(config.docPath, (req, res, next) => {
+    router.get(rc.docPath, (req, res, next) => {
       res.send(index)
     })
-    router.use(joinPath(config.docPath, 'assets'), serveStatic(joinPath(__dirname, '../../resources/ruo-ui')))
+    router.use(joinPath(rc.docPath, 'assets'), serveStatic(joinPath(__dirname, '../../resources/ruo-ui')))
   }
   return router
 }

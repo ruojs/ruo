@@ -1,6 +1,6 @@
-const config = require('../config')
+const rc = require('../rc')
 
-const debug = require('debug')(config.name)
+const debug = require('debug')(rc.name)
 
 const {names, HttpError} = require('../error')
 const logger = require('../logger')
@@ -12,7 +12,7 @@ module.exports = {
         const error = req.swagger.operation.validateResponse(req, res, obj)
 
         if (error) {
-          if (config.env === 'test' || config.env === 'development') {
+          if (rc.env === 'test' || rc.env === 'development') {
             debug('original response', obj)
             throw new HttpError(names[500], 'InvalidResponse ' + JSON.stringify(error, null, '  '))
           } else {

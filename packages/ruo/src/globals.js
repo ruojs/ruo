@@ -8,7 +8,7 @@ const Waterline = require('waterline')
 const pascalcase = require('uppercamelcase')
 const promiseify = require('denodeify')
 
-const config = require('./config')
+const rc = require('./rc')
 const {isTest} = require('./translate')
 
 const waterline = new Waterline()
@@ -19,13 +19,13 @@ module.exports = async ({model: modelConfig} = {}) => {
   let services = {}
   // load models
   try {
-    const modelDir = path.join(config.target, 'model')
+    const modelDir = path.join(rc.target, 'model')
     fs.statSync(modelDir)
     moder(modelDir, {
       lazy: false,
       filter: isTest,
       init (model) {
-        // FIXME: why modelConfig.defaults not working?
+        // FIXME: why modelrc.defaults not working?
         waterline.loadCollection(Waterline.Collection.extend(_.merge({}, modelConfig.defaults, model)))
       }
     })
@@ -50,7 +50,7 @@ module.exports = async ({model: modelConfig} = {}) => {
 
   // load services
   try {
-    const serviceDir = path.join(config.target, 'service')
+    const serviceDir = path.join(rc.target, 'service')
     fs.statSync(serviceDir)
     services = moder(serviceDir, {
       lazy: false,

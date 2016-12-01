@@ -5,17 +5,17 @@ const YAML = require('js-yaml')
 const glob = require('glob')
 const _ = require('lodash')
 
-const config = require('../config')
+const rc = require('../rc')
 const translate = require('../translate')
 
 module.exports = parseAsync
 
-async function parseAsync ({root = config.target, dynamicDefinition = {}} = {}) {
+async function parseAsync ({root = rc.target, dynamicDefinition = {}} = {}) {
   const definition = YAML.load(fs.readFileSync(root + '/spec/swagger.yaml'))
-  definition.paths = glob.sync(`**/*${config.suffix.spec}`, {cwd: root}).sort().reduce((paths, file) => {
+  definition.paths = glob.sync(`**/*${rc.suffix.spec}`, {cwd: root}).sort().reduce((paths, file) => {
     const location = path.join(root, file)
     const yaml = YAML.load(fs.readFileSync(location, 'utf8'))
-    if (config.shadow) {
+    if (rc.shadow) {
       _.assign(paths, yaml)
     } else {
       const name = translate.fromSpec(file)
@@ -31,7 +31,7 @@ async function parseAsync ({root = config.target, dynamicDefinition = {}} = {}) 
     definition['x-errors'] = YAML.load(fs.readFileSync(root + '/spec/errors.yaml'))
   }
 
-  // merge config.swagger and swagger.yaml
+  // merge rc.swagger and swagger.yaml
   _.merge(definition, dynamicDefinition)
 
   return definition

@@ -3,7 +3,7 @@
  */
 const path = require('path')
 
-const config = require('./config')
+const rc = require('./rc')
 
 const DEST_PREFIX = 'api'
 
@@ -29,9 +29,9 @@ function is (suffix, location) {
   return index === (location.length - suffix.length)
 }
 
-const SUFFIX_CODE = config.suffix.code
-const SUFFIX_TEST = config.suffix.test
-const SUFFIX_SPEC = config.suffix.spec
+const SUFFIX_CODE = rc.suffix.code
+const SUFFIX_TEST = rc.suffix.test
+const SUFFIX_SPEC = rc.suffix.spec
 
 module.exports = {
   // '/demo/hello' => '/demo/hello.code.js'

@@ -5,7 +5,7 @@ const glob = require('glob')
 const debug = require('debug')('ruo')
 const {resolveRefs: resolve} = require('json-refs')
 
-const config = require('./config')
+const rc = require('./rc')
 const {Swagger} = require('./swagger')
 const translate = require('./translate')
 const parseAsync = require('./swagger/parse')
@@ -51,11 +51,11 @@ exports.initialize = async (dynamicDefinition, models) => {
   })
 
   // read api implementation and bind them into definition
-  glob.sync(`**/*${config.suffix.code}`, {cwd: config.target}).sort().forEach((file) => {
-    const codePath = joinPath(config.target, file)
+  glob.sync(`**/*${rc.suffix.code}`, {cwd: rc.target}).sort().forEach((file) => {
+    const codePath = joinPath(rc.target, file)
     debug('require', codePath)
     const mod = require(codePath)
-    if (config.shadow) {
+    if (rc.shadow) {
       _.forEach(mod, (handlers, path) => {
         exports.bindHandlers(definition, handlers, path)
       })

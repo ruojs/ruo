@@ -10,12 +10,12 @@ const chalk = require('chalk')
 const _ = require('lodash')
 const glob = require('glob')
 const merge = require('merge-stream')
-const {config} = require('ruo')
+const {rc} = require('ruo')
 
 const helpers = require('./helpers')
 
 // if source equals to target, project don't require compilation and related tasks
-const isGeneratorStyle = config.source === config.target
+const isGeneratorStyle = rc.source === rc.target
 const RUO_DIR = path.join(__dirname, '..')
 const BABELRC = JSON.parse(fs.readFileSync(`${RUO_DIR}/.babelrc`, 'utf8'))
 BABELRC.plugins = BABELRC.plugins.map((name) => {
@@ -24,7 +24,7 @@ BABELRC.plugins = BABELRC.plugins.map((name) => {
 
 gulp.task('clean', () => {
   if (!isGeneratorStyle) {
-    del.sync(config.target)
+    del.sync(rc.target)
   }
 })
 
@@ -35,10 +35,10 @@ gulp.task('test', () => {
     MOCHA_OPTIONS.push('-r')
     MOCHA_OPTIONS.push('co-mocha')
   }
-  if (config.test.bootload) {
-    MOCHA_OPTIONS.push(config.test.bootload)
+  if (rc.test.bootload) {
+    MOCHA_OPTIONS.push(rc.test.bootload)
   }
-  const TEST_FILES = glob.sync(`${config.target}/**/*${config.suffix.test}`)
+  const TEST_FILES = glob.sync(`${rc.target}/**/*${rc.suffix.test}`)
   let args = ['./node_modules/.bin/_mocha']
   args = args.concat(MOCHA_OPTIONS)
 
@@ -71,14 +71,14 @@ gulp.task('test', () => {
 })
 gulp.task('c', ['cover'])
 gulp.task('cover', ['build'], () => {
-  const MOCHA_OPTIONS = `--colors --timeout 20000 ${config.cover.bootload}`.split(' ')
-  const TEST_FILES = glob.sync(`${config.target}/**/*${config.suffix.test}`)
-  let args = ['cover', '--report', 'text', '--report', 'html', '-i', `${config.target}/**/*.js`, '-x', `${config.target}/**/*${config.suffix.test}`, './node_modules/.bin/_mocha', '--']
+  const MOCHA_OPTIONS = `--colors --timeout 20000 ${rc.cover.bootload}`.split(' ')
+  const TEST_FILES = glob.sync(`${rc.target}/**/*${rc.suffix.test}`)
+  let args = ['cover', '--report', 'text', '--report', 'html', '-i', `${rc.target}/**/*.js`, '-x', `${rc.target}/**/*${rc.suffix.test}`, './node_modules/.bin/_mocha', '--']
   args = args.concat(MOCHA_OPTIONS).concat(TEST_FILES)
   helpers.execute(`${RUO_DIR}/node_modules/.bin/istanbul`, args, {NODE_ENV: 'test'})
 })
 
-const LINT_FILES = config.lint.include
+const LINT_FILES = rc.lint.include
 gulp.task('lint', () => {
   return gulp.src(LINT_FILES)
     .pipe(plugins.eslint())
@@ -88,18 +88,18 @@ gulp.task('lint', () => {
 })
 
 function copy (paths, cached) {
-  let stream = gulp.src(paths, {base: config.source})
+  let stream = gulp.src(paths, {base: rc.source})
   if (cached) {
-    stream = stream.pipe(plugins.changed(config.target))
+    stream = stream.pipe(plugins.changed(rc.target))
   }
   return stream
     .pipe(plugins.debug({title: 'copy'}))
-    .pipe(gulp.dest(config.target))
+    .pipe(gulp.dest(rc.target))
 }
 function compile (paths, type, cached) {
-  let stream = gulp.src(paths, {base: config.source})
+  let stream = gulp.src(paths, {base: rc.source})
   if (cached) {
-    stream = stream.pipe(plugins.changed(config.target))
+    stream = stream.pipe(plugins.changed(rc.target))
   }
   return stream
     .pipe(plugins.debug({title: type}))
@@ -108,32 +108,32 @@ function compile (paths, type, cached) {
       console.log(err.stack); // eslint-disable-line
       type === 'build' && process.exit(1)
     })
-    .pipe(gulp.dest(config.target))
+    .pipe(gulp.dest(rc.target))
 }
 function cleanup (srcPath) {
   // Simulating the {base: 'src'} used with gulp.src in the scripts task
-  let filePathFromSrc = path.relative(path.resolve(config.source), srcPath)
+  let filePathFromSrc = path.relative(path.resolve(rc.source), srcPath)
   // Concatenating the 'build' absolute path used by gulp.dest in the scripts task
-  let destFilePath = path.resolve(config.target, filePathFromSrc)
+  let destFilePath = path.resolve(rc.target, filePathFromSrc)
   del.sync(destFilePath)
 }
 gulp.task('build', ['clean'], () => {
   if (!isGeneratorStyle) {
     return merge(
-      copy(`${config.source}/**/*.!(js)`),
-      compile(`${config.source}/**/*.js`, 'build'))
+      copy(`${rc.source}/**/*.!(js)`),
+      compile(`${rc.source}/**/*.js`, 'build'))
   }
 })
 gulp.task('cached-build', () => {
   if (!isGeneratorStyle) {
     return merge(
-      copy(`${config.source}/**/*.!(js)`, true),
-      compile(`${config.source}/**/*.js`, 'build', true))
+      copy(`${rc.source}/**/*.!(js)`, true),
+      compile(`${rc.source}/**/*.js`, 'build', true))
   }
 })
 gulp.task('build-watch', ['cached-build'], () => {
   if (!isGeneratorStyle) {
-    plugins.watch(`${config.source}/**/*`, (vinyl) => {
+    plugins.watch(`${rc.source}/**/*`, (vinyl) => {
       debug('build watch', vinyl.path, vinyl.event)
 
       if (vinyl.event === 'unlink') {
@@ -152,7 +152,7 @@ gulp.task('build-watch', ['cached-build'], () => {
 
 let serveEnv = {
   NODE_ENV: process.env.NODE_ENV || 'development',
-  DEBUG: config.name
+  DEBUG: rc.name
 }
 function serve () {
   let env = ''
@@ -160,8 +160,8 @@ function serve () {
     env = `${env} ${key}=${serveEnv[key]}`
   }
   debug('env', env)
-  const watches = config.watch.map((s) => '-w ' + s).join(' ')
-  const args = `-e js,yaml ${watches} -w ${config.target} --exec ${env} ${config.exec}`.split(' ')
+  const watches = rc.watch.map((s) => '-w ' + s).join(' ')
+  const args = `-e js,yaml ${watches} -w ${rc.target} --exec ${env} ${rc.exec}`.split(' ')
   debug('serve args', args)
   let app = spawn(`${RUO_DIR}/node_modules/.bin/nodemon`, args, {
     stdio: ['pipe', 1, 2, 'ipc']
