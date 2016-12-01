@@ -13,7 +13,15 @@ module.exports = {
   resolve: {
     extensions: ['', '.js']
   },
+  standard: {
+    fix: true
+  },
   module: {
+    preLoaders: [{
+      test: /\.js|jsx$/,
+      exclude: /node_modules/,
+      loader: 'standard-loader'
+    }],
     loaders: loaders
   },
   plugins: [
