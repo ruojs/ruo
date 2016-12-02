@@ -96,6 +96,11 @@ function schemaToJson (schema) {
       break
     case 'string':
       json = schema.enum ? schema.enum[0] : 'stringValue'
+      if (schema.format === 'date') {
+        json = '2016-01-01'
+      } else if (schema.format === 'date-time') {
+        json = '2016-01-01T10:10:10.098Z'
+      }
       break
     case 'boolean':
       json = true
