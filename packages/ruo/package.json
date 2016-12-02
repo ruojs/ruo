@@ -80,7 +80,7 @@
     "prepublish": "npm run build"
   },
   "options": {
-    "mocha": "resources/mocha-bootload --colors --full-trace"
+    "mocha": "resources/mocha-bootload --colors --full-trace --timeout 10000"
   },
   "nyc": {
     "include": [
