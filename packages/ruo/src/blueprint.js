@@ -4,6 +4,7 @@ const _ = require('lodash')
 const glob = require('glob')
 const debug = require('debug')('ruo')
 const {resolveRefs: resolve} = require('json-refs')
+const pascalcase = require('uppercamelcase')
 
 const rc = require('./rc')
 const {Swagger} = require('./swagger')
@@ -37,19 +38,15 @@ const VALIDATION_MAPPING = {
 exports.initialize = async (dynamicDefinition, models) => {
   const definition = await parseAsync({dynamicDefinition})
   // load model definitions
-  const modelsDef = definition['x-models'] = {}
   _.forEach(models, (model) => {
-    modelsDef[model.identity] = exports.modelToJsonSchema(model.definition)
+    if (model.blueprint) {
+      const modelName = exports.getModelName(model.identity)
+      definition.definitions[modelName] = exports.modelToJsonSchema(model.definition)
+    }
   })
   await validateAsync(definition)
 
-  // generate blueprint api definition and implementation
-  _.forEach(models, (model) => {
-    if (model.blueprint) {
-      exports.createBlueprint(definition.paths, model)
-    }
-  })
-
+  const pathDefs = definition.paths
   // read api implementation and bind them into definition
   glob.sync(`**/*${rc.suffix.code}`, {cwd: rc.target}).sort().forEach((file) => {
     const codePath = joinPath(rc.target, file)
@@ -57,11 +54,30 @@ exports.initialize = async (dynamicDefinition, models) => {
     const mod = require(codePath)
     if (rc.shadow) {
       _.forEach(mod, (handlers, path) => {
-        exports.bindHandlers(definition, handlers, path)
+        exports.bindHandlers(pathDefs, handlers, path)
       })
     } else {
       const path = utility.fromCode(file)
-      exports.bindHandlers(definition, mod, path)
+      exports.bindHandlers(pathDefs, mod, path)
+    }
+  })
+
+  // generate blueprint api definition and implementation
+  _.forEach(models, (model) => {
+    if (model.blueprint) {
+      const actions = exports.getBlueprintActions(model)
+      const blueprintDefinitions = exports.getBlueprintDefinitions(model)
+      const blueprintHandlers = exports.getBlueprintHandlers(model)
+      _.forEach(actions, (pathAndMethod, action) => {
+        if (model.blueprint[action]) {
+          if (!_.has(pathDefs, pathAndMethod)) {
+            _.set(pathDefs, pathAndMethod, blueprintDefinitions[action])
+          }
+          if (!_.has(pathDefs, pathAndMethod.concat('__handler__'))) {
+            _.set(pathDefs, pathAndMethod.concat('__handler__'), blueprintHandlers[action])
+          }
+        }
+      })
     }
   })
 
@@ -69,14 +85,18 @@ exports.initialize = async (dynamicDefinition, models) => {
   return new Swagger(definitionResolved)
 }
 
-exports.bindHandlers = (definition, handlers, path) => {
+exports.bindHandlers = (pathDefs, handlers, path) => {
   _.forEach(handlers, (handler, method) => {
     // bind handler only when api is defined
-    const operationDef = _.get(definition.paths, [path, method])
+    const operationDef = _.get(pathDefs, [path, method])
     if (operationDef) {
       operationDef.__handler__ = handler
     }
   })
+}
+
+exports.getModelName = (identity) => {
+  return `${pascalcase(identity)}Model`
 }
 
 // convert model definition to json schema
@@ -110,139 +130,141 @@ exports.modelToJsonSchema = (definition) => {
   return schema
 }
 
-exports.createBlueprint = (paths, model) => {
+exports.getBlueprintActions = (model) => {
   const resource = model.identity
-  const handlers = exports.createHandlers(model)
-
-  // POST /resource
-  _.set(paths, [`/${resource}`, 'post'], {
-    tags: [resource],
-    summary: `create ${resource}`,
-    parameters: [{
-      name: resource,
-      in: 'body',
-      schema: {
-        $ref: `#/x-models/${resource}`
-      }
-    }],
-    responses: {
-      201: {
-        schema: {
-          $ref: `#/x-models/${resource}`
-        }
-      },
-      default: {
-        schema: {
-          $ref: '#/definitions/Error'
-        }
-      }
-    },
-    __handler__: handlers.create
-  })
-
-  // GET /resource
-  _.set(paths, [`/${resource}`, 'get'], {
-    tags: [resource],
-    summary: `find ${resource}`,
-    parameters: [{
-      name: resource,
-      in: 'body',
-      schema: {
-        type: 'object',
-        properties: {
-          $ref: `#/x-models/${resource}/properties`
-        }
-      }
-    }],
-    responses: {
-      200: {
-        schema: {
-          type: 'array',
-          items: {
-            $ref: `#/x-models/${resource}`
-          }
-        }
-      },
-      default: {
-        schema: {
-          $ref: '#/definitions/Error'
-        }
-      }
-    },
-    __handler__: handlers.find
-  })
-
-  // GET /resource/{id}
-  _.set(paths, [`/${resource}/{id}`, 'get'], {
-    tags: [resource],
-    summary: `get ${resource} by id`,
-    responses: {
-      200: {
-        schema: {
-          $ref: `#/x-models/${resource}`
-        }
-      },
-      default: {
-        schema: {
-          $ref: '#/definitions/Error'
-        }
-      }
-    },
-    __handler__: handlers.findOne
-  })
-
-  // PUT /resource/{id}
-  _.set(paths, [`/${resource}/{id}`, 'put'], {
-    tags: [resource],
-    summary: `update ${resource} by id`,
-    parameters: [{
-      name: resource,
-      in: 'body',
-      schema: {
-        type: 'object',
-        properties: {
-          $ref: `#/x-models/${resource}/properties`
-        }
-      }
-    }],
-    responses: {
-      200: {
-        schema: {
-          $ref: `#/x-models/${resource}`
-        }
-      },
-      default: {
-        schema: {
-          $ref: '#/definitions/Error'
-        }
-      }
-    },
-    __handler__: handlers.update
-  })
-
-  // DELETE /resource/{id}
-  _.set(paths, [`/${resource}/{id}`, 'delete'], {
-    tags: [resource],
-    summary: `delete ${resource} by id`,
-    responses: {
-      200: {
-        schema: {
-          $ref: `#/x-models/${resource}`
-        }
-      },
-      default: {
-        schema: {
-          $ref: '#/definitions/Error'
-        }
-      }
-    },
-    __handler__: handlers.destroy
-  })
-
-  return paths
+  return {
+    create: [`/${resource}`, 'post'],
+    find: [`/${resource}`, 'get'],
+    findOne: [`/${resource}/{id}`, 'get'],
+    update: [`/${resource}/{id}`, 'put'],
+    destroy: [`/${resource}/{id}`, 'delete']
+  }
 }
 
-exports.createHandlers = (model) => {
+exports.getBlueprintDefinitions = (model) => {
+  const resource = model.identity
+  const modelName = exports.getModelName(model.identity)
+  const blueprint = model.blueprint
+  return {
+    create: {
+      tags: [resource],
+      security: blueprint.create,
+      summary: `create ${resource}`,
+      parameters: [{
+        name: resource,
+        in: 'body',
+        schema: {
+          $ref: `#/definitions/${modelName}`
+        }
+      }],
+      responses: {
+        201: {
+          schema: {
+            $ref: `#/definitions/${modelName}`
+          }
+        },
+        default: {
+          schema: {
+            $ref: '#/definitions/Error'
+          }
+        }
+      }
+    },
+    find: {
+      tags: [resource],
+      security: blueprint.find,
+      summary: `find ${resource}`,
+      parameters: [{
+        name: resource,
+        in: 'body',
+        schema: {
+          type: 'object',
+          properties: {
+            $ref: `#/definitions/${modelName}/properties`
+          }
+        }
+      }],
+      responses: {
+        200: {
+          schema: {
+            type: 'array',
+            items: {
+              $ref: `#/definitions/${modelName}`
+            }
+          }
+        },
+        default: {
+          schema: {
+            $ref: '#/definitions/Error'
+          }
+        }
+      }
+    },
+    findOne: {
+      tags: [resource],
+      security: blueprint.findOne,
+      summary: `get ${resource} by id`,
+      responses: {
+        200: {
+          schema: {
+            $ref: `#/definitions/${modelName}`
+          }
+        },
+        default: {
+          schema: {
+            $ref: '#/definitions/Error'
+          }
+        }
+      }
+    },
+    update: {
+      tags: [resource],
+      security: blueprint.update,
+      summary: `update ${resource} by id`,
+      parameters: [{
+        name: resource,
+        in: 'body',
+        schema: {
+          type: 'object',
+          properties: {
+            $ref: `#/definitions/${modelName}/properties`
+          }
+        }
+      }],
+      responses: {
+        200: {
+          schema: {
+            $ref: `#/definitions/${modelName}`
+          }
+        },
+        default: {
+          schema: {
+            $ref: '#/definitions/Error'
+          }
+        }
+      }
+    },
+    destroy: {
+      tags: [resource],
+      security: blueprint.destroy,
+      summary: `delete ${resource} by id`,
+      responses: {
+        200: {
+          schema: {
+            $ref: `#/definitions/${modelName}`
+          }
+        },
+        default: {
+          schema: {
+            $ref: '#/definitions/Error'
+          }
+        }
+      }
+    }
+  }
+}
+
+exports.getBlueprintHandlers = (model) => {
   return {
     *create (req, res) {
       res.status(201).send(yield model.create(req.body))

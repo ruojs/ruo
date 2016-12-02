@@ -1,5 +1,5 @@
 /**
- * Load middleware, service and api implementations
+ * Load security, middleware, service and api implementations
  */
 const fs = require('fs')
 const path = require('path')
@@ -12,15 +12,15 @@ const pascalcase = require('uppercamelcase')
 const promiseify = require('denodeify')
 
 const rc = require('./rc')
-const {isTest} = require('./utility')
+const {isTest, wrapMiddleware} = require('./utility')
 
 const waterline = new Waterline()
 const initialize = promiseify(waterline.initialize.bind(waterline))
 
 exports.initialize = async ({model: modelConfig} = {}) => {
   const globals = {};
-  // load model, service and middleware
-  ['model', 'service', 'middleware'].forEach((type) => {
+  // load model, service and security
+  ['model', 'service', 'security', 'middleware'].forEach((type) => {
     const name = type + 's'
     globals[name] = {}
     try {
@@ -36,6 +36,19 @@ exports.initialize = async ({model: modelConfig} = {}) => {
       if (err.code !== 'ENOENT') {
         throw err
       }
+    }
+  })
+
+  // wrap security middlewares
+  _.forEach(globals.securitys, (middleware, name) => {
+    // TODO: what if security middleware require arguments?
+    globals.securitys[name] = wrapMiddleware(middleware())
+  })
+
+  // wrap normal middlewares
+  _.forEach(globals.middlewares, (middleware, name) => {
+    globals.middlewares[name] = function () {
+      wrapMiddleware(middleware.apply(undefined, arguments))
     }
   })
 

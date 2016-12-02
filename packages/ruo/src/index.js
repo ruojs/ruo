@@ -24,19 +24,19 @@ async function createApplicationAsync (app, options = {}) {
     const {
       logger: {file, logstash, sentry} = {},
       dynamicDefinition = {},
-      securityMiddlewares = {},
       errorHandler,
       model
     } = options
 
     logger.initialize({file, logstash, sentry})
-    const {models, services, middlewares} = await globals.initialize({model})
+    const {models, services, securitys, middlewares} = await globals.initialize({model})
     const api = await blueprint.initialize(dynamicDefinition, models)
 
     exports.app = app
     exports.api = api
     exports.models = models
     exports.services = services
+    exports.securitys = securitys
     exports.middlewares = exports.mws = middlewares
     if (rc.env === 'test') {
       exports.test = require('./supertest').initialize(app, api)
@@ -78,7 +78,7 @@ async function createApplicationAsync (app, options = {}) {
     // request validation
     app.use(mws.validation.request())
     // security handler
-    app.use(mws.security(api, securityMiddlewares))
+    app.use(mws.security(api, securitys))
     // dynamic swagger defined route
     app.use(mws.debug.preHandler())
     app.use(mws.api(api))
