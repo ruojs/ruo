@@ -11,7 +11,8 @@
   },
   "config": {
     "ghooks": {
-      "pre-commit": "npm test"
+      "pre-commit": "npm test",
+      "post-merge": "npm install"
     }
   }
 }
