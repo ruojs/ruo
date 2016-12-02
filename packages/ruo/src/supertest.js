@@ -1,7 +1,11 @@
 const url = require('url')
+const events = require('events')
 
 const defaults = require('superagent-defaults')
 const supertest = require('supertest')
+
+// https://github.com/visionmedia/supertest/issues/307
+events.EventEmitter.defaultMaxListeners = Infinity
 
 exports.initialize = function (app, api) {
   const test = {}
