@@ -7,13 +7,13 @@ const mkdirp = require('mkdirp')
 const copy = require('ncp')
 const del = require('del')
 const debug = require('debug')('ruo-cli')
-const {config, parseAsync} = require('ruo')
+const {rc, parseAsync} = require('ruo')
 
 const {filterByFn} = require('./helpers')
 
 module.exports = () => {
-  const DOCS = config.doc
-  const DEST = path.join(config.target, 'doc')
+  const DOCS = rc.doc
+  const DEST = path.join(rc.target, 'doc')
 
   const source = fs.readFileSync(path.join(__dirname, '/template/ruo-ui.hbs'), 'utf8')
   const template = handlebars.compile(source)
@@ -21,8 +21,8 @@ module.exports = () => {
   mkdirp.sync(DEST)
 
   _.forEach(DOCS, (tags, name) => {
-    // TODO: fix missing `config.swagger`
-    parseAsync({root: config.source}).then((spec) => {
+    // TODO: fix missing `rc.swagger`
+    parseAsync({root: rc.source}).then((spec) => {
       selectTags(spec, tags)
 
       // filter particular security definitions

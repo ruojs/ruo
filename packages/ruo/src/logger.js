@@ -5,7 +5,7 @@ const DailyRotateFile = require('winston-daily-rotate-file')
 const Logstash = require('winston-logstash').Logstash
 const Sentry = require('winston-common-sentry')
 
-const config = require('./config')
+const rc = require('./rc')
 
 const HOSTNAME = os.hostname()
 
@@ -27,7 +27,7 @@ logger.accesslogStream = {
 // lazy initialize logger transports
 // https://github.com/winstonjs/winston/blob/master/docs/transports.md
 logger.initialize = ({file, logstash, sentry}) => {
-  const env = config.env
+  const env = rc.env
 
   const consoleTransport = new (winston.transports.Console)({
     name: 'consoleTransport',

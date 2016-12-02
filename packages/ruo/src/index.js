@@ -1,36 +1,46 @@
-const _ = require('lodash')
-
-const config = require('./config')
-const {Swagger, parseAsync} = require('./swagger')
-const translate = require('./translate')
-const mws = require('./middleware')
-const {HttpError, ParameterError} = require('./error')
-const logger = require('./logger')
-const initGlobalsAsync = require('./globals')
+const rc = require('./rc')
+const utility = require('./utility')
 const Pipeline = require('./pipeline')
-const {wrapRoute, wrapMiddleware} = require('./utility')
+const mws = require('./middleware')
+const logger = require('./logger')
+const globals = require('./globals')
+const blueprint = require('./blueprint')
+const {parseAsync} = require('./swagger')
+const {HttpError, ParameterError} = require('./error')
 
 exports.createApplicationAsync = createApplicationAsync
-exports.HttpError = HttpError
 // backward compability
-exports.ResponseError = HttpError
+exports.ResponseError = exports.HttpError = HttpError
 exports.ParameterError = ParameterError
-exports.translate = translate
+exports.translate = exports.utility = utility
 exports.parseAsync = parseAsync
 exports.logger = logger
-exports.config = config
-exports.wrapRoute = wrapRoute
-exports.wrapMiddleware = wrapMiddleware
+exports.rc = rc
+exports.wrapRoute = utility.wrapRoute
+exports.wrapMiddleware = utility.wrapMiddleware
 
 async function createApplicationAsync (app, options = {}) {
-  const {logger: {file, logstash, sentry} = {}, dynamicDefinition = {}, securityMiddlewares = {}, errorHandler, model} = options
-
-  logger.initialize({file, logstash, sentry})
-  _.assign(exports, await initGlobalsAsync({model}))
-  exports.app = app
-
   try {
-    const api = await Swagger.createAsync(dynamicDefinition)
+    const {
+      logger: {file, logstash, sentry} = {},
+      dynamicDefinition = {},
+      errorHandler,
+      model
+    } = options
+
+    logger.initialize({file, logstash, sentry})
+    const {models, services, securitys, middlewares} = await globals.initialize({model})
+    const api = await blueprint.initialize(dynamicDefinition, models)
+
+    exports.app = app
+    exports.api = api
+    exports.models = models
+    exports.services = services
+    exports.securitys = securitys
+    exports.middlewares = exports.mws = middlewares
+    if (rc.env === 'test') {
+      exports.test = require('./supertest').initialize(app, api)
+    }
 
     app.use((req, res, next) => {
       req.state = {
@@ -59,7 +69,7 @@ async function createApplicationAsync (app, options = {}) {
     //
 
     // binding request context
-    app.use(mws.context(config.target + '/context'))
+    app.use(mws.context(rc.target + '/context'))
     // setup swagger documentation
     app.use(mws.docs(api.definition))
     app.use(mws.switch())
@@ -68,7 +78,7 @@ async function createApplicationAsync (app, options = {}) {
     // request validation
     app.use(mws.validation.request())
     // security handler
-    app.use(mws.security(api, securityMiddlewares))
+    app.use(mws.security(api, securitys))
     // dynamic swagger defined route
     app.use(mws.debug.preHandler())
     app.use(mws.api(api))

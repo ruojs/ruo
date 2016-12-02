@@ -1,7 +1,7 @@
-const config = require('../config')
+const rc = require('../rc')
 
 const _ = require('lodash')
-const debug = require('debug')(config.name)
+const debug = require('debug')(rc.name)
 const {names, messages, table} = require('../error')
 
 const logger = require('../logger')
@@ -15,7 +15,7 @@ module.exports = (api, customErrorHandler = defaultErrorHandler) => {
   const globalErrorCodeTable = _.merge({}, table, api['x-errors'])
 
   return (err, req, res, next) => { // eslint-disable-line
-    if (config.env === 'development') {
+    if (rc.env === 'development') {
       logger.error('ErrorHandler', req.method, req.path, err.stack || err)
     } else {
       debug('ErrorHandler', err.stack || err)
@@ -75,7 +75,7 @@ function getErrorData (err, req, globalErrorCodeTable) {
 }
 
 function reportError (err, req) {
-  if (config.env === 'production') {
+  if (rc.env === 'production') {
     let payload = req.method === 'GET' || req.method === 'DELETE' ? req.query : req.body
     payload = JSON.stringify(payload, null, '  ')
     payload = payload.slice(0, 1000)

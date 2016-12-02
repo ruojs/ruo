@@ -6,13 +6,13 @@ const inquirer = require('inquirer')
 const mkdirp = require('mkdirp')
 const handlebars = require('handlebars')
 const debug = require('debug')('ruo-cli')
-const {config, parseAsync, translate} = require('ruo')
+const {rc, parseAsync, translate} = require('ruo')
 
-const templatePath = config.templatePath || path.join(__dirname, 'template')
+const templatePath = rc.templatePath || path.join(__dirname, 'template')
 const EXAMPLE_SPEC = fs.readFileSync(path.join(templatePath, 'spec.hbs'), 'utf8')
 
 let spec
-let root = config.source
+let root = rc.source
 
 async function main () {
   spec = await parseAsync({root})

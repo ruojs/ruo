@@ -2,8 +2,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 
 const {createApplicationAsync} = require('../../src')
-const createTokenMiddleware = require('./middleware/token')
-const createBasicMiddleware = require('./middleware/basic')
 
 const port = 8088
 
@@ -25,12 +23,7 @@ async function createServer () {
     app.use(bodyParser.urlencoded({extended: true}))
     app.use(bodyParser.json())
 
-    await createApplicationAsync(app, {
-      securityMiddlewares: {
-        token: createTokenMiddleware(),
-        basic: createBasicMiddleware()
-      }
-    })
+    await createApplicationAsync(app)
 
     return app
   } catch (err) {

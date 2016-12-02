@@ -1,19 +1,22 @@
 const events = require('events')
 
-const supertest = require('supertest')
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
+const sinonChai = require('sinon-chai')
 
-const createServer = require('./test/server')
+const ruo = require('../src')
+const createServer = require('./test/app')
 
 // https://github.com/visionmedia/supertest/issues/307
 events.EventEmitter.defaultMaxListeners = Infinity
 
+chai.should()
+chai.use(sinonChai)
 chai.use(chaiAsPromised)
 
 before(() => {
   return createServer()
     .then((app) => {
-      global.api = supertest(app)
+      global.api = ruo.test.app
     })
 })

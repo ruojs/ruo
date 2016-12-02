@@ -1,10 +1,10 @@
 const _ = require('lodash')
 
-const {wrapMiddleware, forEachOperation} = require('../utility')
+const {forEachOperation} = require('../utility')
 
 const BINDING_KEY = '__security_middleware__'
 
-module.exports = (api, securityMiddlewares) => {
+module.exports = (api, securitys) => {
   const definition = api.definition
   // pre-bind operation to security middleware
   forEachOperation(definition, (path, method, operationDef) => {
@@ -19,11 +19,6 @@ module.exports = (api, securityMiddlewares) => {
     })
     securityHandlers = _.uniq(securityHandlers)
     operationDef[BINDING_KEY] = securityHandlers
-  })
-
-  // wrap security middlewares
-  _.forEach(securityMiddlewares, (middleware, name) => {
-    securityMiddlewares[name] = wrapMiddleware(middleware)
   })
 
   return (req, res, done) => {
@@ -42,7 +37,7 @@ module.exports = (api, securityMiddlewares) => {
       if (index === securityHandlers.length) {
         return done(err)
       }
-      let securityHandler = securityMiddlewares[securityHandlers[index]]
+      let securityHandler = securitys[securityHandlers[index]]
       index = index + 1
       securityHandler(req, res, next)
     }

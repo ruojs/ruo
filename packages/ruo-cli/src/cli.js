@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+const path = require('path')
+
+const rc = require('rc')('ruo')
 const updateNotifier = require('update-notifier')
 const minimist = require('minimist')
 const pkg = require('../package.json')
 const argv = minimist(process.argv.slice(2))
-const {findRoot} = require('./helpers')
 
 updateNotifier({
   pkg,
@@ -31,12 +33,11 @@ Availble commands:
   process.exit(0)
 }
 
-const projectRoot = findRoot(process.cwd(), '.ruorc')
-if (!projectRoot) {
+if (!rc.config) {
   console.error('Not inside ruo project')
   process.exit(1)
 }
-process.chdir(projectRoot)
+process.chdir(path.dirname(rc.config))
 
 const command = argv._[0]
 if (['doc', 'spec', 'gen'].indexOf(command) !== -1) {

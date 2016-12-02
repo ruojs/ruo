@@ -1,7 +1,7 @@
-const config = require('../config')
+const rc = require('../rc')
 
 module.exports = () => {
-  const enabled = config.env === 'test' || config.env === 'development'
+  const enabled = rc.env === 'test' || rc.env === 'development'
 
   return (req, res, next) => {
     const switchs = enabled ? JSON.parse(req.get('x-switch') || '{}') : {}

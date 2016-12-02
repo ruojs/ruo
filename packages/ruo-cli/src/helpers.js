@@ -1,5 +1,3 @@
-const fs = require('fs')
-const path = require('path')
 const spawnSync = require('child_process').spawnSync
 
 const debug = require('debug')('ruo-cli')
@@ -46,16 +44,4 @@ exports.filterByFn = (fn, obj) => {
   }
 
   return obj
-}
-
-exports.findRoot = (dir, mark) => {
-  debug('dir', dir)
-  while (!fs.readdirSync(dir).some((file) => file === mark)) {
-    dir = path.dirname(dir)
-    debug('parent dir', dir)
-    if (dir === '/') {
-      return null
-    }
-  }
-  return dir
 }

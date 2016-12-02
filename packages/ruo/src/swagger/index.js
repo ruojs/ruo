@@ -1,7 +1,7 @@
 const parseUrl = require('url').parse
 
 const _ = require('lodash')
-const resolve = require('json-refs').resolveRefs
+const {resolveRefs: resolve} = require('json-refs')
 
 const Path = require('./path')
 const parseAsync = require('./parse')

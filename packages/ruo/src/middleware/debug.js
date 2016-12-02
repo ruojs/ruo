@@ -1,5 +1,5 @@
-const config = require('../config')
-const debug = require('debug')(config.name)
+const rc = require('../rc')
+const debug = require('debug')(rc.name)
 
 module.exports = {
   request () {
