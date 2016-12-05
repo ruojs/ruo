@@ -161,7 +161,7 @@ function serve () {
   }
   debug('env', env)
   const watches = rc.watch.map((s) => '-w ' + s).join(' ')
-  const args = `-e js,yaml ${watches} -w ${rc.target} --exec ${env} ${rc.exec}`.split(' ')
+  const args = `-e js,yaml ${watches} -w ${rc.target} -i ${rc.target}/**/*${rc.suffix.test} --exec ${env} ${rc.exec}`.split(' ')
   debug('serve args', args)
   let app = spawn(`${RUO_DIR}/node_modules/.bin/nodemon`, args, {
     stdio: ['pipe', 1, 2, 'ipc']
