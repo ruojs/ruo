@@ -68,7 +68,8 @@ class TreeView extends Component {
   renderPattern (schema) {
     const { pattern } = schema
     if (pattern) {
-      return <span className='param-pattern'>{pattern}</span>
+      // return <span className='param-pattern'>{pattern}</span>
+      return
     }
   }
   renderEnum (enumItems) {

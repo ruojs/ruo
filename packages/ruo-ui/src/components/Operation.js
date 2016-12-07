@@ -3,7 +3,6 @@ import qs from 'querystring'
 import React from 'react'
 import Debug from 'debug'
 import { Link } from 'react-router'
-import { Collapse } from 'antd'
 
 import marked from '../marked'
 import AppStore from '../stores/AppStore'
@@ -14,7 +13,6 @@ import TreeView from './TreeView'
 import './Operation.css'
 
 const debug = Debug('swagger-renderer:components')
-const Panel = Collapse.Panel
 
 export default class Operation extends React.Component {
   _renderAuthorizations (securityDefinitions, security) {
@@ -107,11 +105,12 @@ export default class Operation extends React.Component {
       }
 
       return (
-        <Panel header={status} key={index}>
+        <div key={index}>
+          <h3>{status}</h3>
           <p dangerouslySetInnerHTML={{__html: marked(response.description)}} />
           <TreeView schema={response.schema} />
           <Example examples={examples} />
-        </Panel>
+        </div>
       )
     })
   }
@@ -137,9 +136,7 @@ export default class Operation extends React.Component {
 
         <h2>响应</h2>
         <div>
-          <Collapse bordered={false}>
-            {this._renderResponses(operation.responses)}
-          </Collapse>
+          {this._renderResponses(operation.responses)}
         </div>
 
         <p>
