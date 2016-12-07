@@ -3,6 +3,7 @@ import qs from 'querystring'
 import React from 'react'
 import Debug from 'debug'
 import { Link } from 'react-router'
+import { Collapse } from 'antd'
 
 import marked from '../marked'
 import AppStore from '../stores/AppStore'
@@ -13,6 +14,7 @@ import TreeView from './TreeView'
 import './Operation.css'
 
 const debug = Debug('swagger-renderer:components')
+const Panel = Collapse.Panel
 
 export default class Operation extends React.Component {
   _renderAuthorizations (securityDefinitions, security) {
@@ -84,35 +86,37 @@ export default class Operation extends React.Component {
   }
 
   _renderResponses (responses) {
-    return Object.keys(responses).map((status, index) => {
-      const response = responses[status]
-      let examples
-      if (response['x-examples']) {
-        examples = response['x-examples']
-      } else {
-        examples = utility.schemaToJson(response.schema)
-      }
-
-      if (status === 'default') {
-        if (index === 0) {
-          // 只有 default response
-          status = ''
+    const keys = Object.keys(responses).map((_, index) => String(index))
+    return <Collapse bordered={false} defaultActiveKey={keys}>
+      {Object.keys(responses).map((status, index) => {
+        const response = responses[status]
+        let examples
+        if (response['x-examples']) {
+          examples = response['x-examples']
         } else {
-          status = '失败'
+          examples = utility.schemaToJson(response.schema)
         }
-      } else {
-        status = `状态码 ${status}`
-      }
 
-      return (
-        <div key={index}>
-          <h3>{status}</h3>
-          <p dangerouslySetInnerHTML={{__html: marked(response.description)}} />
-          <TreeView schema={response.schema} />
-          <Example examples={examples} />
-        </div>
-      )
-    })
+        if (status === 'default') {
+          if (index === 0) {
+            // 只有 default response
+            status = ''
+          } else {
+            status = '失败'
+          }
+        } else {
+          status = `状态码 ${status}`
+        }
+
+        return (
+          <Panel header={status} key={index}>
+            <p dangerouslySetInnerHTML={{__html: marked(response.description)}} />
+            <TreeView schema={response.schema} />
+            <Example examples={examples} />
+          </Panel>
+        )
+      })}
+    </Collapse>
   }
 
   render () {
