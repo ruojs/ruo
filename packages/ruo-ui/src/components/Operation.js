@@ -86,34 +86,37 @@ export default class Operation extends React.Component {
   }
 
   _renderResponses (responses) {
-    return Object.keys(responses).map((status, index) => {
-      const response = responses[status]
-      let examples
-      if (response['x-examples']) {
-        examples = response['x-examples']
-      } else {
-        examples = utility.schemaToJson(response.schema)
-      }
-
-      if (status === 'default') {
-        if (index === 0) {
-          // 只有 default response
-          status = ''
+    const keys = Object.keys(responses).map((_, index) => String(index))
+    return <Collapse bordered={false} defaultActiveKey={keys}>
+      {Object.keys(responses).map((status, index) => {
+        const response = responses[status]
+        let examples
+        if (response['x-examples']) {
+          examples = response['x-examples']
         } else {
-          status = '失败'
+          examples = utility.schemaToJson(response.schema)
         }
-      } else {
-        status = `状态码 ${status}`
-      }
 
-      return (
-        <Panel header={status} key={index}>
-          <p dangerouslySetInnerHTML={{__html: marked(response.description)}} />
-          <TreeView schema={response.schema} />
-          <Example examples={examples} />
-        </Panel>
-      )
-    })
+        if (status === 'default') {
+          if (index === 0) {
+            // 只有 default response
+            status = ''
+          } else {
+            status = '失败'
+          }
+        } else {
+          status = `状态码 ${status}`
+        }
+
+        return (
+          <Panel header={status} key={index}>
+            <p dangerouslySetInnerHTML={{__html: marked(response.description)}} />
+            <TreeView schema={response.schema} />
+            <Example examples={examples} />
+          </Panel>
+        )
+      })}
+    </Collapse>
   }
 
   render () {
@@ -137,9 +140,7 @@ export default class Operation extends React.Component {
 
         <h2>响应</h2>
         <div>
-          <Collapse bordered={false}>
-            {this._renderResponses(operation.responses)}
-          </Collapse>
+          {this._renderResponses(operation.responses)}
         </div>
 
         <p>
