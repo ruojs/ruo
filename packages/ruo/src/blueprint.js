@@ -130,6 +130,30 @@ exports.modelToJsonSchema = (definition) => {
   return schema
 }
 
+exports.modelToParameter = (definition) => {
+  return _.map(definition, (defField, name) => {
+    const type = TYPE_MAPPING[defField.type]
+    const parameter = {
+      name,
+      in: 'query',
+      required: Boolean(defField.required),
+      type: type[0],
+    }
+
+    if (type[1]) {
+      parameter.format = type[1];
+    }
+
+    _.forEach(VALIDATION_MAPPING, (to, from) => {
+      if (defField[from]) {
+        parameter[to] = defField[from]
+      }
+    })
+
+    return parameter
+  })
+}
+
 exports.getBlueprintActions = (model) => {
   const resource = model.identity
   return {
@@ -144,6 +168,7 @@ exports.getBlueprintActions = (model) => {
 exports.getBlueprintDefinitions = (model) => {
   const resource = model.identity
   const modelName = exports.getModelName(model.identity)
+  const parameters = exports.modelToParameter(model.definition);
   const blueprint = model.blueprint
   return {
     create: {
@@ -174,16 +199,7 @@ exports.getBlueprintDefinitions = (model) => {
       tags: [resource],
       security: blueprint.find,
       summary: `find ${resource}`,
-      parameters: [{
-        name: resource,
-        in: 'body',
-        schema: {
-          type: 'object',
-          properties: {
-            $ref: `#/definitions/${modelName}/properties`
-          }
-        }
-      }],
+      parameters: [parameters],
       responses: {
         200: {
           schema: {
