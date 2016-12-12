@@ -98,24 +98,24 @@ describe('blueprint', () => {
       name: 'id',
       required: false,
       type: 'integer',
-      in: 'query',
+      in: 'query'
     }, {
       name: 'status',
       required: true,
       type: 'string',
       enum: ['enabled', 'disabled', 'forbidden', 'deleted'],
-      in: 'query',
+      in: 'query'
     }, {
       name: 'disabled',
       required: false,
       type: 'boolean',
-      in: 'query',
+      in: 'query'
     }, {
       name: 'createdAt',
       required: true,
       type: 'string',
       format: 'date-time',
-      in: 'query',
+      in: 'query'
     }])
   })
 
