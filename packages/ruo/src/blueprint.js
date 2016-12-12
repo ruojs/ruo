@@ -211,6 +211,12 @@ exports.getBlueprintDefinitions = (model) => {
         required: false,
         type: 'integer',
         default: 10
+      }, {
+        name: 'sort',
+        in: 'query',
+        required: false,
+        type: 'string',
+        example: 'createdAt ASC'
       }]),
       responses: {
         200: {
@@ -313,10 +319,11 @@ exports.getBlueprintHandlers = (model) => {
       res.status(201).send(yield model.create(req.body))
     },
     *find (req, res) {
-      const {page, limit} = req.query
+      const {page, limit, sort} = req.query
       delete req.query.page
       delete req.query.limit
-      const data = yield model.find(req.query).paginate({page, limit})
+      delete req.query.sort
+      const data = yield model.find({where: req.query, sort}).paginate({page, limit})
       const total = yield model.count(req.query)
       res.send({
         data,
