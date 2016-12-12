@@ -130,6 +130,30 @@ exports.modelToJsonSchema = (definition) => {
   return schema
 }
 
+exports.modelToParameter = (definition) => {
+  return _.map(definition, (defField, name) => {
+    const type = TYPE_MAPPING[defField.type]
+    const parameter = {
+      name,
+      in: 'query',
+      required: Boolean(defField.required),
+      type: type[0]
+    }
+
+    if (type[1]) {
+      parameter.format = type[1]
+    }
+
+    _.forEach(VALIDATION_MAPPING, (to, from) => {
+      if (defField[from]) {
+        parameter[to] = defField[from]
+      }
+    })
+
+    return parameter
+  })
+}
+
 exports.getBlueprintActions = (model) => {
   const resource = model.identity
   return {
@@ -144,6 +168,7 @@ exports.getBlueprintActions = (model) => {
 exports.getBlueprintDefinitions = (model) => {
   const resource = model.identity
   const modelName = exports.getModelName(model.identity)
+  const parameters = exports.modelToParameter(model.definition)
   const blueprint = model.blueprint
   return {
     create: {
@@ -174,22 +199,40 @@ exports.getBlueprintDefinitions = (model) => {
       tags: [resource],
       security: blueprint.find,
       summary: `find ${resource}`,
-      parameters: [{
-        name: resource,
-        in: 'body',
-        schema: {
-          type: 'object',
-          properties: {
-            $ref: `#/definitions/${modelName}/properties`
-          }
-        }
-      }],
+      parameters: parameters.concat([{
+        name: 'page',
+        in: 'query',
+        required: false,
+        type: 'integer',
+        default: 1
+      }, {
+        name: 'limit',
+        in: 'query',
+        required: false,
+        type: 'integer',
+        default: 10
+      }]),
       responses: {
         200: {
           schema: {
-            type: 'array',
-            items: {
-              $ref: `#/definitions/${modelName}`
+            type: 'object',
+            required: ['total', 'page', 'limit', 'data'],
+            properties: {
+              total: {
+                type: 'integer'
+              },
+              page: {
+                type: 'integer'
+              },
+              limit: {
+                type: 'integer'
+              },
+              data: {
+                type: 'array',
+                items: {
+                  $ref: `#/definitions/${modelName}`
+                }
+              }
             }
           }
         },
@@ -270,7 +313,17 @@ exports.getBlueprintHandlers = (model) => {
       res.status(201).send(yield model.create(req.body))
     },
     *find (req, res) {
-      res.send(yield model.find(req.query))
+      const {page, limit} = req.query
+      delete req.query.page
+      delete req.query.limit
+      const data = yield model.find(req.query).paginate({page, limit})
+      const total = yield model.count(req.query)
+      res.send({
+        data,
+        total,
+        page,
+        limit
+      })
     },
     *findOne (req, res) {
       res.send(yield model.findOne({id: req.params.id}))
