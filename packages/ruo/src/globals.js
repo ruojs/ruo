@@ -18,7 +18,7 @@ const waterline = new Waterline()
 const initialize = promiseify(waterline.initialize.bind(waterline))
 
 exports.initialize = async ({model: modelConfig} = {}) => {
-  const globals = {};
+  const globals = {raw: {}};
   // load model, service and security
   ['model', 'service', 'security', 'middleware'].forEach((type) => {
     const name = type + 's'
@@ -40,13 +40,17 @@ exports.initialize = async ({model: modelConfig} = {}) => {
   })
 
   // wrap security middlewares
+  globals.raw.securitys = {}
   _.forEach(globals.securitys, (middleware, name) => {
     // TODO: what if security middleware require arguments?
+    globals.raw.securitys[name] = middleware
     globals.securitys[name] = wrapMiddleware(middleware())
   })
 
   // wrap normal middlewares
+  globals.raw.middlewares = {}
   _.forEach(globals.middlewares, (middleware, name) => {
+    globals.raw.middlewares[name] = middleware
     globals.middlewares[name] = function () {
       wrapMiddleware(middleware.apply(undefined, arguments))
     }

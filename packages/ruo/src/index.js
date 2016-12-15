@@ -29,11 +29,12 @@ async function createApplicationAsync (app, options = {}) {
     } = options
 
     logger.initialize({file, logstash, sentry})
-    const {models, services, securitys, middlewares} = await globals.initialize({model})
+    const {raw, models, services, securitys, middlewares} = await globals.initialize({model})
     const api = await blueprint.initialize(dynamicDefinition, models)
 
     exports.app = app
     exports.api = api
+    exports.raw = raw
     exports.models = models
     exports.services = services
     exports.securitys = securitys
