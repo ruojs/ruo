@@ -17,10 +17,9 @@ module.exports = (api) => {
       } else {
         handler = wrapRoute(handler)
       }
-      let endpoing = path.replace(/\{/g, ':').replace(/\}/g, '')
-      endpoing = `${api.basePathPrefix}${endpoing}`
-      debug('mount handler', method, endpoing)
-      router[method](endpoing, handler)
+      const endpoint = path.replace(/\{/g, ':').replace(/\}/g, '')
+      debug('mount handler', method, endpoint)
+      router[method](endpoint, handler)
     }
   }
 

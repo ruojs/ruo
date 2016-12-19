@@ -82,9 +82,9 @@ async function createApplicationAsync (app, options = {}) {
     app.use(mws.security(api, securitys))
     // dynamic swagger defined route
     app.use(mws.debug.preHandler())
-    app.use(mws.api(api))
+    app.use(api.basePathPrefix, mws.api(api))
     // 404
-    app.use(() => {
+    app.use(api.basePathPrefix, () => {
       throw new HttpError('NotFound')
     })
     // error handling
