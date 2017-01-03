@@ -52,7 +52,7 @@ exports.initialize = async ({model: modelConfig} = {}) => {
   _.forEach(globals.middlewares, (middleware, name) => {
     globals.raw.middlewares[name] = middleware
     globals.middlewares[name] = function () {
-      wrapMiddleware(middleware.apply(undefined, arguments))
+      return wrapMiddleware(middleware.apply(undefined, arguments))
     }
   })
 

@@ -8,6 +8,9 @@ module.exports = (api) => {
 
   for (let path in api.paths) {
     for (let method in api.paths[path]) {
+      const endpoint = path.replace(/\{/g, ':').replace(/\}/g, '')
+      debug('mount handler', method, endpoint)
+
       let handler = api.paths[path][method].__handler__
       if (typeof handler === 'object') {
         // array of middlewares
@@ -15,11 +18,9 @@ module.exports = (api) => {
           return index === handler.length - 1 ? wrapRoute(func) : wrapMiddleware(func)
         })
       } else {
-        handler = wrapRoute(handler)
+        handler = [wrapRoute(handler)]
       }
-      const endpoint = path.replace(/\{/g, ':').replace(/\}/g, '')
-      debug('mount handler', method, endpoint)
-      router[method](endpoint, handler)
+      router[method].apply(router, [endpoint].concat(handler))
     }
   }
 
