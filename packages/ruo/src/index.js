@@ -30,15 +30,15 @@ async function createApplicationAsync (app, options = {}) {
 
     logger.initialize({file, logstash, sentry})
     const {raw, models, services, securitys, middlewares} = await globals.initialize({model})
-    const api = await blueprint.initialize(dynamicDefinition, models)
-
     exports.app = app
-    exports.api = api
     exports.raw = raw
     exports.models = models
     exports.services = services
     exports.securitys = securitys
     exports.middlewares = exports.mws = middlewares
+
+    const api = await blueprint.initialize(dynamicDefinition, models)
+    exports.api = api
     if (rc.env === 'test') {
       exports.test = require('./supertest').initialize(app, api)
     }
