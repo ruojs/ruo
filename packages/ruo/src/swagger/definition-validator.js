@@ -1,4 +1,4 @@
-const ZSchema = require('z-schema')
+const ZSchema = require('./z-schema')
 const _ = require('lodash')
 const resolve = require('json-refs').resolveRefs
 

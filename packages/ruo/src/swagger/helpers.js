@@ -22,6 +22,8 @@ const parameterSchemaProperties = [
 ]
 const collectionFormats = [undefined, 'csv', 'multi', 'pipes', 'ssv', 'tsv']
 const types = ['array', 'boolean', 'integer', 'object', 'number', 'string']
+
+// full-date from http://xml2rfc.ietf.org/public/rfc/html/rfc3339.html#anchor14
 const dateRegExp = new RegExp(
   '^' +
   '\\d{4}' + // year
@@ -121,6 +123,14 @@ exports.computeParameterSchema = (definition) => {
   }
 
   return definition.schema
+}
+
+exports.validateDate = (str) => {
+  return dateRegExp.test(str)
+}
+
+exports.validateDateTime = (str) => {
+  return dateTimeRegExp.test(str)
 }
 
 exports.convertValue = (schema, options, value) => {
@@ -235,8 +245,8 @@ exports.convertValue = (schema, options, value) => {
     case 'string':
       if (['date', 'date-time'].indexOf(schema.format) > -1) {
         if (_.isString(value)) {
-          isDate = schema.format === 'date' && dateRegExp.test(value)
-          isDateTime = schema.format === 'date-time' && dateTimeRegExp.test(value)
+          isDate = schema.format === 'date' && exports.validateDate(value)
+          isDateTime = schema.format === 'date-time' && exports.validateDateTime(value)
 
           if (!isDate && !isDateTime) {
             err = new TypeError('Not a valid ' + schema.format + ' string: ' + originalValue)

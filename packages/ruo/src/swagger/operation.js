@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const ZSchema = require('z-schema')
+const ZSchema = require('./z-schema')
 
 const Parameter = require('./parameter')
 const helpers = require('./helpers')

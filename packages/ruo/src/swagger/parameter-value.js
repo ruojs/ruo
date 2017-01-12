@@ -1,19 +1,14 @@
 const _ = require('lodash')
 const JsonRefs = require('json-refs')
-const ZSchema = require('z-schema')
+const ZSchema = require('./z-schema')
 
 const helpers = require('./helpers')
-const formatValidators = require('./format-validators')
 
 const validator = new ZSchema({
   breakOnFirstError: false,
   ignoreUnknownFormats: true,
   reportPathAsArray: true,
   assumeAdditional: true
-})
-// Add the custom validators
-_.each(formatValidators, function (handler, name) {
-  ZSchema.registerFormat(name, handler)
 })
 
 class ParameterValue {
