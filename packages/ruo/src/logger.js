@@ -26,7 +26,8 @@ logger.accesslogStream = {
 
 // lazy initialize logger transports
 // https://github.com/winstonjs/winston/blob/master/docs/transports.md
-logger.initialize = ({file, logstash, sentry}) => {
+logger.initialize = ({name, file, logstash, sentry}) => {
+  name = name || HOSTNAME
   const env = rc.env
 
   const consoleTransport = new (winston.transports.Console)({
@@ -60,6 +61,7 @@ logger.initialize = ({file, logstash, sentry}) => {
       host: logstash.host,
       port: logstash.port,
       node_name: HOSTNAME,
+      label: name,
       max_connect_retries: Infinity,
       timeout_connect_retries: 30 * 1000
     })

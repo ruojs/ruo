@@ -22,13 +22,13 @@ exports.wrapMiddleware = utility.wrapMiddleware
 async function createApplicationAsync (app, options = {}) {
   try {
     const {
-      logger: {file, logstash, sentry} = {},
+      logger: {name, file, logstash, sentry} = {},
       dynamicDefinition = {},
       errorHandler,
       model
     } = options
 
-    logger.initialize({file, logstash, sentry})
+    logger.initialize({name, file, logstash, sentry})
     const {raw, models, services, securitys, middlewares} = await globals.initialize({model})
     exports.app = app
     exports.raw = raw
