@@ -1,7 +1,6 @@
-const express = require('express')
 const bodyParser = require('body-parser')
 
-const {createApplicationAsync} = require('../../src')
+const ruo = require('../../src')
 
 const port = 8088
 
@@ -18,12 +17,11 @@ if (module.parent) {
 
 async function createServer () {
   try {
-    const app = express()
+    const app = await ruo.createApplicationAsync()
 
     app.use(bodyParser.urlencoded({extended: true}))
     app.use(bodyParser.json())
-
-    await createApplicationAsync(app)
+    app.use(ruo.restMiddleware())
 
     return app
   } catch (err) {
