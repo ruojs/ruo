@@ -8,14 +8,15 @@
 
 ## Usage
 
-    const express = require('express');
+    const ruo = require('ruo');
 
-    const {createApplicationAsync} = require('ruo');
+    async main() {
+      const app = await ruo.createApplicationAsync()
 
-    const app = express();
-    const root = '/path/to/application/root';
+      app.use(ruo.restMiddleware())
 
-    createApplicationAsync(app, root);
+      app.listen(8088)
+    }
 
 ## Development
 
