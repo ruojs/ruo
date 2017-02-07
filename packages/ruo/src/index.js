@@ -1,3 +1,10 @@
+const path = require('path')
+
+const express = require('express')
+const loadConfig = require('mcfg')
+const Router = require('router')
+const debug = require('debug')('ruo')
+
 const rc = require('./rc')
 const utility = require('./utility')
 const Pipeline = require('./pipeline')
@@ -19,11 +26,25 @@ exports.rc = rc
 exports.wrapRoute = utility.wrapRoute
 exports.wrapMiddleware = utility.wrapMiddleware
 
-async function createApplicationAsync (app, options = {}) {
+async function createApplicationAsync (app, options) {
+  if (!app) {
+    app = express()
+    // load configuration files
+    const config = loadConfig(path.join(rc.target, 'config'))
+    debug('user config', config)
+    exports.config = config
+
+    return await _createApplicationAsync(app, config)
+  }
+
+  return await _createApplicationAsync(app, options)
+}
+
+async function _createApplicationAsync (app, options = {}) {
   try {
     const {
       logger: {name, file, logstash, sentry} = {},
-      dynamicDefinition = {},
+      swagger = {},
       errorHandler,
       model
     } = options
@@ -37,11 +58,12 @@ async function createApplicationAsync (app, options = {}) {
     exports.securitys = securitys
     exports.middlewares = exports.mws = middlewares
 
-    const api = await blueprint.initialize(dynamicDefinition, models)
+    const api = await blueprint.initialize(swagger, models)
     exports.api = api
     if (rc.env === 'test') {
       exports.test = require('./supertest').initialize(app, api)
     }
+    exports.restMiddleware = () => getRestMiddleware(api, securitys, errorHandler)
 
     app.use((req, res, next) => {
       req.state = {
@@ -54,47 +76,54 @@ async function createApplicationAsync (app, options = {}) {
       next()
     })
 
-    //
-    // Response pipeline
-    //
-
-    const pipeline = Pipeline()
-    pipeline.use(mws.debug.postHandler())
-    // remove response `null` fields
-    pipeline.use(mws.validation.response())
-    pipeline.use(mws.debug.response())
-    app.use(pipeline.createMiddleware())
-
-    //
-    // Request pipeline
-    //
-
-    // binding request context
-    app.use(mws.context(rc.target + '/context'))
-    // setup swagger documentation
-    app.use(mws.docs(api.definition))
-    app.use(mws.switch())
-    // request & response logging
-    app.use(mws.debug.request())
-    // request validation
-    app.use(mws.validation.request())
-    // security handler
-    app.use(mws.security(api, securitys))
-    // dynamic swagger defined route
-    app.use(mws.debug.preHandler())
-    app.use(api.basePathPrefix, mws.api(api))
-    // 404
-    app.use(api.basePathPrefix, () => {
-      throw new HttpError('NotFound')
-    })
-    // error handling
-    app.use(mws.errorHandler(api, errorHandler))
-
     return app
   } catch (err) {
     console.log(err.stack) // eslint-disable-line
     process.exit(1)
   }
+}
+
+function getRestMiddleware (api, securitys, errorHandler) {
+  const router = Router()
+  //
+  // Response pipeline
+  //
+
+  const pipeline = Pipeline()
+  pipeline.use(mws.debug.postHandler())
+  // remove response `null` fields
+  pipeline.use(mws.validation.response())
+  pipeline.use(mws.debug.response())
+  router.use(pipeline.createMiddleware())
+
+  //
+  // Request pipeline
+  //
+
+  // binding request context
+  router.use(mws.context(rc.target + '/context'))
+  // setup swagger documentation
+  router.use(mws.docs(api.definition))
+  router.use(mws.switch())
+  // request & response logging
+  router.use(mws.debug.request())
+  // request validation
+  router.use(mws.validation.request())
+  // security handler
+  router.use(mws.security(api, securitys))
+  // dynamic swagger defined route
+  router.use(mws.debug.preHandler())
+  router.use(api.basePathPrefix, mws.api(api))
+
+  // 404
+  router.use(api.basePathPrefix, () => {
+    throw new HttpError('NotFound')
+  })
+
+  // error handling
+  router.use(api.basePathPrefix, mws.errorHandler(api, errorHandler))
+
+  return router
 }
 
 process.on('unhandledRejection', function (reason, p) {
