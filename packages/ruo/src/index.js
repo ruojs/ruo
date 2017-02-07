@@ -1,10 +1,7 @@
-const path = require('path')
-
 const express = require('express')
-const loadConfig = require('mcfg')
 const Router = require('router')
-const debug = require('debug')('ruo')
 
+const config = require('./config')
 const rc = require('./rc')
 const utility = require('./utility')
 const Pipeline = require('./pipeline')
@@ -29,9 +26,6 @@ exports.wrapMiddleware = utility.wrapMiddleware
 async function createApplicationAsync (app, options) {
   if (!app) {
     app = express()
-    // load configuration files
-    const config = loadConfig(path.join(rc.target, 'config'))
-    debug('user config', config)
     exports.config = config
 
     return await _createApplicationAsync(app, config)
