@@ -14,9 +14,14 @@ chai.should()
 chai.use(sinonChai)
 chai.use(chaiAsPromised)
 
-before(() => {
-  return createServer()
+before((done) => {
+  createServer()
     .then((app) => {
       global.api = ruo.test.app
+      app.listen(8088)
+      global.socket = require('socket.io-client')(`http://localhost:8088`)
+      socket.on('connect', () => {
+        done()
+      })
     })
 })
