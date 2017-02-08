@@ -35,7 +35,7 @@ const VALIDATION_MAPPING = {
   enum: 'enum'
 }
 
-exports.initialize = async (dynamicDefinition, models) => {
+exports.initialize = async (dynamicDefinition = {}, models) => {
   const definition = await parseAsync({dynamicDefinition})
   // load model definitions
   _.forEach(models, (model) => {

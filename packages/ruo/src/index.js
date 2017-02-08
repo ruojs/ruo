@@ -1,7 +1,8 @@
+const http = require('http')
+
 const express = require('express')
 const Router = require('router')
 
-const config = require('./config')
 const rc = require('./rc')
 const utility = require('./utility')
 const Pipeline = require('./pipeline')
@@ -11,6 +12,7 @@ const globals = require('./globals')
 const blueprint = require('./blueprint')
 const {parseAsync} = require('./swagger')
 const {HttpError, ParameterError} = require('./error')
+const createSocketIOApplication = require('./io')
 
 exports.createApplicationAsync = createApplicationAsync
 // backward compability
@@ -23,41 +25,34 @@ exports.rc = rc
 exports.wrapRoute = utility.wrapRoute
 exports.wrapMiddleware = utility.wrapMiddleware
 
-async function createApplicationAsync (app, options) {
-  if (!app) {
-    app = express()
-    exports.config = config
-
-    return await _createApplicationAsync(app, config)
-  }
-
-  return await _createApplicationAsync(app, options)
-}
-
-async function _createApplicationAsync (app, options = {}) {
+async function createApplicationAsync (app, config = {}) {
   try {
-    const {
-      logger: {name, file, logstash, sentry} = {},
-      swagger = {},
-      errorHandler,
-      model
-    } = options
+    if (!app) {
+      app = express()
+      config = require('./config')
+      exports.config = config
+    }
 
-    logger.initialize({name, file, logstash, sentry})
-    const {raw, models, services, securitys, middlewares} = await globals.initialize({model})
+    logger.initialize(config.logger)
+    const server = http.createServer(app)
+    const {raw, models, services, securitys, middlewares} = await globals.initialize({model: config.model})
+    const api = await blueprint.initialize(config.swagger, models)
+    const io = createSocketIOApplication(server, config.io)
+
+    app.io = io
     exports.app = app
+    exports.io = io
     exports.raw = raw
     exports.models = models
     exports.services = services
     exports.securitys = securitys
     exports.middlewares = exports.mws = middlewares
-
-    const api = await blueprint.initialize(swagger, models)
     exports.api = api
+    exports.restMiddleware = () => getRestMiddleware(api, securitys, config)
+
     if (rc.env === 'test') {
       exports.test = require('./supertest').initialize(app, api)
     }
-    exports.restMiddleware = () => getRestMiddleware(api, securitys, errorHandler)
 
     app.use((req, res, next) => {
       req.state = {
@@ -69,6 +64,10 @@ async function _createApplicationAsync (app, options = {}) {
       }
       next()
     })
+    app.use(mws.session(config.session))
+    app.listen = function listen () {
+      return server.listen.apply(server, arguments)
+    }
 
     return app
   } catch (err) {
@@ -77,8 +76,9 @@ async function _createApplicationAsync (app, options = {}) {
   }
 }
 
-function getRestMiddleware (api, securitys, errorHandler) {
+function getRestMiddleware (api, securitys, config) {
   const router = Router()
+
   //
   // Response pipeline
   //
@@ -115,7 +115,7 @@ function getRestMiddleware (api, securitys, errorHandler) {
   })
 
   // error handling
-  router.use(api.basePathPrefix, mws.errorHandler(api, errorHandler))
+  router.use(api.basePathPrefix, mws.errorHandler(api, config.errorHandler))
 
   return router
 }
