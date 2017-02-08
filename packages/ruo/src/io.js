@@ -11,14 +11,27 @@ const debug = require('debug')(rc.name)
 const {wrapRoute} = require('./utility')
 
 module.exports = function createServer (server, options = {}) {
-  const io = require('socket.io')(server, {path: options.path || '/'})
+  if (!options.path) {
+    return
+  }
+
+  const io = require('socket.io')(server, {path: options.path})
   const app = express()
 
-  const handlers = require('require-all')({
-    dirname: rc.target + '/io',
-    filter: /(^[^.]+)\.js$/,
-    recursive: true
-  })
+  let handlers
+  try {
+    handlers = require('require-all')({
+      dirname: rc.target + '/io',
+      filter: /(^[^.]+)\.js$/,
+      recursive: true
+    })
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      handlers = {}
+    } else {
+      throw err
+    }
+  }
 
   if (options.session) {
     io.adapter(ioRedis({

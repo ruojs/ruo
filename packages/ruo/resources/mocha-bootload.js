@@ -19,7 +19,7 @@ before((done) => {
     .then((app) => {
       global.api = ruo.test.app
       app.listen(8088)
-      global.socket = require('socket.io-client')(`http://localhost:8088`)
+      global.socket = require('socket.io-client')(`http://localhost:8088`, {path: '/socket.io'})
       socket.on('connect', () => {
         done()
       })
