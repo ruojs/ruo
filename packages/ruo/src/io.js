@@ -93,10 +93,13 @@ module.exports = function createServer (server, options = {}) {
     }
   })
 
-  for (const event in handlers) {
-    const handler = handlers[event]
-    app.use('/' + event, wrapRoute(handler))
-  }
+  // TODO: find a better way to mount handle in the end
+  setImmediate(() => {
+    for (const event in handlers) {
+      const handler = handlers[event]
+      app.use('/' + event, wrapRoute(handler))
+    }
+  })
   app.use((err, req, res, next) => {
     logger.error('WebSocket exception', err.stack)
   })
