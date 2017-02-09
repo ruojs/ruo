@@ -13,6 +13,7 @@ const blueprint = require('./blueprint')
 const {parseAsync} = require('./swagger')
 const {HttpError, ParameterError} = require('./error')
 const createSocketIOApplication = require('./io')
+const createSession = require('./session')
 
 exports.createApplicationAsync = createApplicationAsync
 // backward compability
@@ -64,7 +65,9 @@ async function createApplicationAsync (app, config = {}) {
       }
       next()
     })
-    app.use(mws.session(config.session))
+    if (config.session) {
+      app.use(createSession(config.session))
+    }
     app.listen = function listen () {
       return server.listen.apply(server, arguments)
     }

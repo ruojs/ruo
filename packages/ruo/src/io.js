@@ -1,7 +1,6 @@
 const express = require('express')
 const ioredis = require('ioredis')
 const ioSession = require('socket.io-express-session')
-const Session = require('express-session')
 const ioRedis = require('socket.io-redis')
 const MockReq = require('mock-req')
 
@@ -9,6 +8,7 @@ const logger = require('./logger')
 const rc = require('./rc')
 const debug = require('debug')(rc.name)
 const {wrapRoute} = require('./utility')
+const createSession = require('./session')
 
 module.exports = function createServer (server, options = {}) {
   if (!options.path) {
@@ -40,7 +40,7 @@ module.exports = function createServer (server, options = {}) {
       subClient: ioredis(options.session.redis),
       subEvent: 'messageBuffer'
     }))
-    io.use(ioSession(Session(options.session)))
+    io.use(ioSession(createSession(options.session)))
   }
 
   io.on('connection', (socket) => {
