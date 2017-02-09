@@ -83,3 +83,24 @@ exports.forEachOperation = (definition, fn) => {
     })
   })
 }
+
+exports.createRouter = (onReply) => {
+  let seq = 0
+  const map = {}
+
+  function reply (message) {
+    map[message[0].seq](message[1])
+  }
+
+  function route (body, callback) {
+    seq++
+    const envelope = {seq}
+    const message = [envelope, body]
+    map[seq] = callback
+    return message
+  }
+
+  onReply(reply)
+
+  return route
+}
