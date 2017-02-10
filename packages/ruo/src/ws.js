@@ -8,9 +8,10 @@ const _ = require('lodash')
 const MockRes = require('./mock-res')
 const rc = require('./rc')
 const createSession = require('./session')
+const logger = require('./logger')
 
-module.exports = function createServer (server, options = {}) {
-  if (!options.path) {
+function createWebSocketApplication (server, options) {
+  if (!options) {
     return
   }
 
@@ -48,9 +49,17 @@ module.exports = function createServer (server, options = {}) {
 
       const res = MockRes(req, envelope)
 
-      app(req, res)
+      app(req, res, (err) => {
+        if (err) {
+          return logger.error(err.stack)
+        }
+
+        logger.warn('WebSocket no matching handler')
+      })
     })
   })
 
   return app
 }
+
+module.exports = createWebSocketApplication

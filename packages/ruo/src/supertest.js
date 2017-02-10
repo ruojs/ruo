@@ -3,20 +3,37 @@ const events = require('events')
 
 const defaults = require('superagent-defaults')
 const supertest = require('supertest')
+const client = require('socket.io-client')
+
+const {initializeClientSocket} = require('./utility')
 
 // https://github.com/visionmedia/supertest/issues/307
 events.EventEmitter.defaultMaxListeners = Infinity
 
-exports.initialize = function (app, api) {
-  const test = {}
+const port = 10000 + parseInt(Math.random() * 10000, 10)
 
-  app = defaults(supertest(app))
-  app.on('request', (request) => {
-    const urlObject = url.parse(request.url)
-    urlObject.pathname = api.basePathPrefix + urlObject.pathname
-    request.url = url.format(urlObject)
+function createTestApplicationAsync (app, api, config) {
+  return new Promise((resolve) => {
+    app.listen(port)
+
+    app = defaults(supertest(app))
+    app.on('request', (request) => {
+      const urlObject = url.parse(request.url)
+      urlObject.pathname = api.basePathPrefix + urlObject.pathname
+      request.url = url.format(urlObject)
+    })
+    global.api = app
+
+    if (config.ws) {
+      global.socket = client(`http://localhost:${port}`, {path: config.ws.path})
+      initializeClientSocket(socket)
+      socket.on('connect', () => {
+        resolve()
+      })
+    } else {
+      resolve()
+    }
   })
-  test.app = app
-
-  return test
 }
+
+module.exports = createTestApplicationAsync
