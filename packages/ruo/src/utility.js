@@ -84,7 +84,7 @@ exports.forEachOperation = (definition, fn) => {
   })
 }
 
-exports.createRouter = (onReply) => {
+function createRouter (onReply) {
   let seq = 0
   const map = {}
 
@@ -103,4 +103,18 @@ exports.createRouter = (onReply) => {
   onReply(reply)
 
   return route
+}
+
+exports.initializeClientSocket = (socket) => {
+  const route = createRouter((reply) => {
+    socket.on('rep', reply)
+  })
+  socket.request = (req, callback) => {
+    return new Promise((resolve) => {
+      socket.emit('req', route(req, (res) => {
+        resolve(res)
+        callback && callback(res)
+      }))
+    })
+  }
 }
