@@ -1,0 +1,20 @@
+post:
+  tags: [ ws ]
+  summary: Echo websocket request body
+  parameters:
+    - name: message
+      in: formData
+      required: true
+      type: string
+  responses:
+    200:
+      schema:
+        type: object
+        required:
+          - message
+        properties:
+          message:
+            type: string
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"

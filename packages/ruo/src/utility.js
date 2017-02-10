@@ -83,3 +83,38 @@ exports.forEachOperation = (definition, fn) => {
     })
   })
 }
+
+function createRouter (onReply) {
+  let seq = 0
+  const map = {}
+
+  function reply (message) {
+    map[message[0].seq](message[1])
+  }
+
+  function route (body, callback) {
+    seq++
+    const envelope = {seq}
+    const message = [envelope, body]
+    map[seq] = callback
+    return message
+  }
+
+  onReply(reply)
+
+  return route
+}
+
+exports.initializeClientSocket = (socket) => {
+  const route = createRouter((reply) => {
+    socket.on('rep', reply)
+  })
+  socket.request = (req, callback) => {
+    return new Promise((resolve) => {
+      socket.emit('req', route(req, (res) => {
+        resolve(res)
+        callback && callback(res)
+      }))
+    })
+  }
+}

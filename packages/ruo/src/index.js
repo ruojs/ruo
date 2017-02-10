@@ -12,7 +12,7 @@ const globals = require('./globals')
 const blueprint = require('./blueprint')
 const {parseAsync} = require('./swagger')
 const {HttpError, ParameterError} = require('./error')
-const createSocketIOApplication = require('./io')
+const createWebSocketApplication = require('./ws')
 const createSession = require('./session')
 
 exports.createApplicationAsync = createApplicationAsync
@@ -38,11 +38,11 @@ async function createApplicationAsync (app, config = {}) {
     const server = http.createServer(app)
     const {raw, models, services, securitys, middlewares} = await globals.initialize({model: config.model})
     const api = await blueprint.initialize(config.swagger, models)
-    const io = createSocketIOApplication(server, config.io)
+    const ws = createWebSocketApplication(server, config.ws)
 
-    app.io = io
+    app.ws = ws
     exports.app = app
-    exports.io = io
+    exports.ws = ws
     exports.raw = raw
     exports.models = models
     exports.services = services
@@ -55,19 +55,15 @@ async function createApplicationAsync (app, config = {}) {
       exports.test = require('./supertest').initialize(app, api)
     }
 
-    app.use((req, res, next) => {
-      req.state = {
-        version: api.definition.info.version
-      }
-      const operation = api.getOperation(req)
-      req.swagger = {
-        operation: operation
-      }
-      next()
-    })
     if (config.session) {
       app.use(createSession(config.session))
     }
+
+    // TODO: find a better way to mount handle in the end
+    setImmediate(() => {
+      ws.use(exports.restMiddleware())
+    })
+
     app.listen = function listen () {
       return server.listen.apply(server, arguments)
     }
@@ -97,6 +93,16 @@ function getRestMiddleware (api, securitys, config) {
   // Request pipeline
   //
 
+  router.use((req, res, next) => {
+    req.state = {
+      version: api.definition.info.version
+    }
+    const operation = api.getOperation(req)
+    req.swagger = {
+      operation: operation
+    }
+    next()
+  })
   // binding request context
   router.use(mws.context(rc.target + '/context'))
   // setup swagger documentation
