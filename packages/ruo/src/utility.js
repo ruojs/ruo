@@ -108,11 +108,12 @@ function createRouter (onReply) {
   return route
 }
 
-exports.initializeClientSocket = (socket) => {
+exports.initializeClientSocket = (socket, {basePath = ''} = {}) => {
   const route = createRouter((reply) => {
     socket.on('rep', reply)
   })
   socket.request = (req, callback) => {
+    req.url = basePath + req.url
     return new Promise((resolve) => {
       socket.emit('req', route(req, (res) => {
         resolve(res)
