@@ -2,7 +2,7 @@ const STATUS_CODES = require('http').STATUS_CODES
 
 // Forked from https://github.com/diachedelic/mock-res/blob/93a33be9158bcf94738ff18279d305671fb3ae90/index.js
 // NOTE: cant use prototype to create MockRes class because [express will override res.__proto__](https://github.com/expressjs/express/blob/abd1de73c14985c884d11fb35aff5f4b17381e23/lib/middleware/init.js#L28)
-function MockRes (req, envelope) {
+function MockRes (req, envelope, basePathPrefix) {
   const headers = {}
   let broadcast = false
   return {
@@ -49,7 +49,7 @@ function MockRes (req, envelope) {
       req.socket.emit('rep', reply)
 
       if (broadcast) {
-        req.ws.to(req.session.room).emit(`${req.method} ${req.url}`, res)
+        req.ws.to(req.session.room).emit(`${req.method} ${basePathPrefix + req.url}`, res)
       }
     },
     send (body) {

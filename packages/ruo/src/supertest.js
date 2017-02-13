@@ -26,7 +26,7 @@ function createTestApplicationAsync (app, api, config) {
 
     if (config.ws) {
       global.socket = client(`http://localhost:${port}`, {path: config.ws.path})
-      initializeClientSocket(socket, {basePath: api.basePathPrefix})
+      initializeClientSocket(socket, {basePathPrefix: api.basePathPrefix})
       socket.on('connect', () => {
         resolve()
       })

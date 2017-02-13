@@ -55,7 +55,7 @@ async function createApplicationAsync (app, config = {}) {
     }
 
     if (config.ws) {
-      const ws = createWebSocketApplication(server, config.ws)
+      const ws = createWebSocketApplication(server, api, config.ws)
       app.ws = ws
       exports.ws = ws
       // TODO: find a better way to mount handle in the end

@@ -10,7 +10,7 @@ const rc = require('./rc')
 const createSession = require('./session')
 const logger = require('./logger')
 
-function createWebSocketApplication (server, options) {
+function createWebSocketApplication (server, api, options) {
   if (!options) {
     return
   }
@@ -47,7 +47,7 @@ function createWebSocketApplication (server, options) {
         socket
       })
 
-      const res = MockRes(req, envelope)
+      const res = MockRes(req, envelope, api.basePathPrefix)
 
       app(req, res, (err) => {
         if (err) {
