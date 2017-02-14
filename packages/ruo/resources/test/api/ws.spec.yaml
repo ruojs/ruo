@@ -1,3 +1,23 @@
+get:
+  tags: [ ws ]
+  summary: Broadcast all node in room
+  parameters:
+    - name: message
+      in: query
+      required: true
+      type: string
+  responses:
+    200:
+      schema:
+        type: object
+        required:
+          - message
+        properties:
+          message:
+            type: string
+    default:
+      schema:
+        $ref: "#/definitions/ErrorResponse"
 post:
   tags: [ ws ]
   summary: Echo websocket request body

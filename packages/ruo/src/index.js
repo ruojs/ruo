@@ -14,6 +14,7 @@ const {parseAsync} = require('./swagger')
 const {HttpError, ParameterError} = require('./error')
 const createWebSocketApplication = require('./ws')
 const createSession = require('./session')
+const createTestApplicationAsync = require('./supertest')
 
 exports.createApplicationAsync = createApplicationAsync
 // backward compability
@@ -38,31 +39,30 @@ async function createApplicationAsync (app, config = {}) {
     const server = http.createServer(app)
     const {raw, models, services, securitys, middlewares} = await globals.initialize({model: config.model})
     const api = await blueprint.initialize(config.swagger, models)
-    const ws = createWebSocketApplication(server, config.ws)
 
-    app.ws = ws
     exports.app = app
-    exports.ws = ws
     exports.raw = raw
     exports.models = models
     exports.services = services
     exports.securitys = securitys
     exports.middlewares = exports.mws = middlewares
     exports.api = api
-    exports.restMiddleware = () => getRestMiddleware(api, securitys, config)
-
-    if (rc.env === 'test') {
-      exports.test = require('./supertest').initialize(app, api)
-    }
+    exports.createTestApplicationAsync = () => createTestApplicationAsync(app, api, config)
+    exports.getRestMiddleware = exports.restMiddleware = () => getRestMiddleware(api, securitys, config)
 
     if (config.session) {
       app.use(createSession(config.session))
     }
 
-    // TODO: find a better way to mount handle in the end
-    setImmediate(() => {
-      ws.use(exports.restMiddleware())
-    })
+    if (config.ws) {
+      const wsapp = createWebSocketApplication(server, api, config.ws)
+      app.wsapp = wsapp
+      exports.wsapp = wsapp
+      // TODO: find a better way to mount handle in the end
+      setImmediate(() => {
+        wsapp.use(exports.getRestMiddleware())
+      })
+    }
 
     app.listen = function listen () {
       return server.listen.apply(server, arguments)

@@ -1,3 +1,8 @@
 module.exports = {
-  path: '/socket.io'
+  path: '/socket.io',
+  session: {
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false
+  }
 }

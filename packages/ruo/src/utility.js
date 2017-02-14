@@ -89,7 +89,10 @@ function createRouter (onReply) {
   const map = {}
 
   function reply (message) {
-    map[message[0].seq](message[1])
+    const callback = map[message[0].seq]
+    if (callback) {
+      callback(message[1])
+    }
   }
 
   function route (body, callback) {
@@ -105,11 +108,12 @@ function createRouter (onReply) {
   return route
 }
 
-exports.initializeClientSocket = (socket) => {
+exports.initializeClientSocket = (socket, {basePathPrefix = ''} = {}) => {
   const route = createRouter((reply) => {
     socket.on('rep', reply)
   })
   socket.request = (req, callback) => {
+    req.url = basePathPrefix + req.url
     return new Promise((resolve) => {
       socket.emit('req', route(req, (res) => {
         resolve(res)
