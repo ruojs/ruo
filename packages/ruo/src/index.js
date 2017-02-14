@@ -55,12 +55,12 @@ async function createApplicationAsync (app, config = {}) {
     }
 
     if (config.ws) {
-      const ws = createWebSocketApplication(server, api, config.ws)
-      app.ws = ws
-      exports.ws = ws
+      const wsapp = createWebSocketApplication(server, api, config.ws)
+      app.wsapp = wsapp
+      exports.wsapp = wsapp
       // TODO: find a better way to mount handle in the end
       setImmediate(() => {
-        ws.use(exports.getRestMiddleware())
+        wsapp.use(exports.getRestMiddleware())
       })
     }
 

@@ -15,22 +15,23 @@ function createWebSocketApplication (server, api, options) {
     return
   }
 
-  const ws = require('socket.io')(server, {path: options.path})
-  const app = express()
+  const io = require('socket.io')(server, {path: options.path})
+  const wsapp = express()
+  wsapp.io = io
 
   if (options.session) {
     if (options.session.redis) {
-      ws.adapter(ioRedis({
+      io.adapter(ioRedis({
         key: `${rc.name}:socket.io`,
         pubClient: ioredis(options.session.redis),
         subClient: ioredis(options.session.redis),
         subEvent: 'messageBuffer'
       }))
     }
-    ws.use(ioSession(createSession(options.session)))
+    io.use(ioSession(createSession(options.session)))
   }
 
-  ws.on('connection', (socket) => {
+  io.on('connection', (socket) => {
     socket.on('req', (message) => {
       let [envelope, {method = 'GET', url, headers = {}, query, body}] = message
       headers = _.assign({'content-type': 'application/json'}, socket.handshake.headers, headers)
@@ -43,13 +44,13 @@ function createWebSocketApplication (server, api, options) {
         ip: socket.handshake.headers['x-forwarded-for'] || socket.handshake.address,
         query,
         body,
-        ws,
+        io,
         socket
       })
 
       const res = MockRes(req, envelope, api.basePathPrefix)
 
-      app(req, res, (err) => {
+      wsapp(req, res, (err) => {
         if (err) {
           return logger.error(err.stack)
         }
@@ -59,7 +60,7 @@ function createWebSocketApplication (server, api, options) {
     })
   })
 
-  return app
+  return wsapp
 }
 
 module.exports = createWebSocketApplication

@@ -49,7 +49,7 @@ function MockRes (req, envelope, basePathPrefix) {
       req.socket.emit('rep', reply)
 
       if (broadcast) {
-        req.ws.to(req.session.room).emit(`${req.method} ${basePathPrefix + req.url}`, res)
+        req.io.to(req.session.room).emit(`${req.method} ${basePathPrefix + req.url}`, res)
       }
     },
     send (body) {
