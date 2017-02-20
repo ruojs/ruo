@@ -38,7 +38,6 @@ async function createApplicationAsync (app, config = {}) {
     logger.initialize(config.logger)
     const server = http.createServer(app)
     const {raw, models, services, securitys, middlewares} = await globals.initialize({model: config.model})
-    const api = await blueprint.initialize(config.swagger, models)
 
     exports.app = app
     exports.raw = raw
@@ -46,6 +45,8 @@ async function createApplicationAsync (app, config = {}) {
     exports.services = services
     exports.securitys = securitys
     exports.middlewares = exports.mws = middlewares
+
+    const api = await blueprint.initialize(config.swagger, models)
     exports.api = api
     exports.createTestApplicationAsync = () => createTestApplicationAsync(app, api, config)
     exports.getRestMiddleware = exports.restMiddleware = () => getRestMiddleware(api, securitys, config)

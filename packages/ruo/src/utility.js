@@ -10,21 +10,31 @@ const rc = require('./rc')
 //
 
 exports.wrapRoute = (fn) => {
+  if (fn && fn.__ruo_wrap) {
+    return fn
+  }
   fn = co.wrap(fn)
-  return function () {
+  const newFn = function () {
     return fn.apply(undefined, arguments)
       .catch(arguments[arguments.length - 1])
   }
+  newFn.__ruo_wrap = true
+  return newFn
 }
 
 exports.wrapMiddleware = (fn) => {
+  if (fn && fn.__ruo_wrap) {
+    return fn
+  }
   fn = co.wrap(fn)
-  return function () {
+  const newFn = function () {
     const next = arguments[arguments.length - 1]
     return fn.apply(undefined, arguments)
       .then(next.bind(null, null))
       .catch(next)
   }
+  newFn.__ruo_wrap = true
+  return newFn
 }
 
 //
