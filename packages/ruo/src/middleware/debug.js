@@ -15,7 +15,8 @@ module.exports = {
 
   response () {
     return (req, res, obj) => {
-      debug('response', obj)
+      // TODO: performance problem?
+      debug('response', JSON.stringify(obj))
       return obj
     }
   },

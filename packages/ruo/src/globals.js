@@ -7,15 +7,10 @@ const path = require('path')
 const debug = require('debug')('ruo')
 const moder = require('moder')
 const _ = require('lodash')
-const Waterline = require('waterline')
-const pascalcase = require('uppercamelcase')
-const promiseify = require('denodeify')
+const Sequelize = require('sequelize')
 
 const rc = require('./rc')
 const {isTest, wrapMiddleware} = require('./utility')
-
-const waterline = new Waterline()
-const initialize = promiseify(waterline.initialize.bind(waterline))
 
 exports.initialize = async ({model: modelConfig} = {}) => {
   const globals = {raw: {}};
@@ -58,23 +53,26 @@ exports.initialize = async ({model: modelConfig} = {}) => {
 
   // initialize models
   if (modelConfig) {
-    _.forEach(globals.models, (model) => {
-      // FIXME: why modelrc.defaults not working?
-      waterline.loadCollection(Waterline.Collection.extend(_.merge({}, modelConfig.defaults, model)))
+    const sequelize = new Sequelize(modelConfig.database, modelConfig.username, modelConfig.password, {
+      host: modelConfig.host,
+      dialect: modelConfig.dialect,
+      pool: modelConfig.pool,
+      timezone: modelConfig.timezone,
+      define: {
+        timestamps: false,
+        freezeTableName: true
+      },
+      logging: false
     })
-    for (let name in modelConfig.adapters) {
-      modelConfig.adapters[name] = require(modelConfig.adapters[name])
-    }
-    const ontology = await initialize(modelConfig)
-    const models = _.reduce(ontology.collections, (obj, model, name) => {
-      name = pascalcase(name)
-      obj[name] = model
-      return obj
-    }, {})
-    // TODO: just pick one of the model, any better way?
-    const Model = models[Object.keys(models)[0]]
-    models.query = promiseify(Model.query.bind(Model))
-    globals.models = models
+
+    _.forEach(globals.models, (model, modelName) => {
+      model.unshift(modelName)
+      sequelize.define.apply(sequelize, model)
+    })
+    globals.DataTypes = Sequelize.DataTypes
+    globals.QueryTypes = Sequelize.QueryTypes
+    globals.models = sequelize.models
+    globals.query = sequelize.query.bind(sequelize)
   }
 
   return globals

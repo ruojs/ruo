@@ -13,7 +13,7 @@ module.exports = {
 
         if (error) {
           if (rc.env === 'test' || rc.env === 'development') {
-            debug('original response', obj)
+            debug('original response', JSON.stringify(obj))
             throw new HttpError(names[500], 'InvalidResponse ' + JSON.stringify(error, null, '  '))
           } else {
             logger.error('invalid response format', req.method, req.url, {
