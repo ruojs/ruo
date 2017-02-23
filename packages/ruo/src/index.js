@@ -37,11 +37,23 @@ async function createApplicationAsync (app, config = {}) {
 
     logger.initialize(config.logger)
     const server = http.createServer(app)
-    const {raw, models, services, securitys, middlewares} = await globals.initialize({model: config.model})
+    const {
+      raw,
+      models,
+      DataTypes,
+      QueryTypes,
+      query,
+      services,
+      securitys,
+      middlewares
+    } = await globals.initialize({model: config.model})
 
     exports.app = app
     exports.raw = raw
     exports.models = models
+    exports.DataTypes = DataTypes
+    exports.QueryTypes = QueryTypes
+    exports.query = query
     exports.services = services
     exports.securitys = securitys
     exports.middlewares = exports.mws = middlewares

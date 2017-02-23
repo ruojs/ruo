@@ -57,6 +57,7 @@ exports.initialize = async ({model: modelConfig} = {}) => {
       host: modelConfig.host,
       dialect: modelConfig.dialect,
       pool: modelConfig.pool,
+      timezone: modelConfig.timezone,
       define: {
         timestamps: false,
         freezeTableName: true
@@ -68,8 +69,10 @@ exports.initialize = async ({model: modelConfig} = {}) => {
       model.unshift(modelName)
       sequelize.define.apply(sequelize, model)
     })
-    globals.DataTypes = Sequelize
+    globals.DataTypes = Sequelize.DataTypes
+    globals.QueryTypes = Sequelize.QueryTypes
     globals.models = sequelize.models
+    globals.query = sequelize.query.bind(sequelize)
   }
 
   return globals
