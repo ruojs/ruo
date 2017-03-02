@@ -69,8 +69,6 @@ exports.initialize = async ({model: modelConfig} = {}) => {
       model.unshift(modelName)
       sequelize.define.apply(sequelize, model)
     })
-    globals.DataTypes = Sequelize.DataTypes
-    globals.QueryTypes = Sequelize.QueryTypes
     globals.models = sequelize.models
     globals.query = sequelize.query.bind(sequelize)
   }

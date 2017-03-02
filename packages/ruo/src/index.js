@@ -2,6 +2,7 @@ const http = require('http')
 
 const express = require('express')
 const Router = require('router')
+const Sequelize = require('sequelize')
 
 const rc = require('./rc')
 const utility = require('./utility')
@@ -26,6 +27,8 @@ exports.logger = logger
 exports.rc = rc
 exports.wrapRoute = utility.wrapRoute
 exports.wrapMiddleware = utility.wrapMiddleware
+exports.DataTypes = Sequelize.DataTypes
+exports.QueryTypes = Sequelize.QueryTypes
 
 async function createApplicationAsync (app, config = {}) {
   try {
@@ -40,8 +43,6 @@ async function createApplicationAsync (app, config = {}) {
     const {
       raw,
       models,
-      DataTypes,
-      QueryTypes,
       query,
       services,
       securitys,
@@ -51,8 +52,6 @@ async function createApplicationAsync (app, config = {}) {
     exports.app = app
     exports.raw = raw
     exports.models = models
-    exports.DataTypes = DataTypes
-    exports.QueryTypes = QueryTypes
     exports.query = query
     exports.services = services
     exports.securitys = securitys

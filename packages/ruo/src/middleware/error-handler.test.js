@@ -26,4 +26,11 @@ describe('error-handler', () => {
       .expect(400)
     expect(body.name).to.eql('BadRequest')
   })
+
+  it('should construct via route path rather than real path', async () => {
+    const {body} = await api.get('/exception/0')
+      .query({message: 'BadRequest'})
+      .expect(400)
+    expect(body.name).to.eql('/exception/:id.get.BadRequest')
+  })
 })
