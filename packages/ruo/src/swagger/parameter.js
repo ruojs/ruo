@@ -93,9 +93,7 @@ class Parameter {
     switch (this.in) {
       case 'formData':
         const type = this.schema.type
-        const contentType = helpers.getContentType(req.headers)
-        if (type !== 'file' &&
-            (contentType === 'application/x-www-form-urlencoded' || contentType === 'multipart/form-data')) {
+        if (type !== 'file') {
           req.body[this.name] = value
         }
         break
