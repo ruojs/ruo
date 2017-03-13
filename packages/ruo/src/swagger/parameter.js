@@ -93,7 +93,7 @@ class Parameter {
     switch (this.in) {
       case 'formData':
         const type = this.schema.type
-        if (type !== 'file') {
+        if (type !== 'file' && value != null) {
           req.body[this.name] = value
         }
         break
