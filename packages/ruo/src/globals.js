@@ -71,6 +71,7 @@ exports.initialize = async ({model: modelConfig} = {}) => {
     })
     globals.models = sequelize.models
     globals.query = sequelize.query.bind(sequelize)
+    globals.transaction = sequelize.transaction.bind(sequelize)
   }
 
   return globals
