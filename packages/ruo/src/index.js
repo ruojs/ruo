@@ -46,6 +46,7 @@ async function createApplicationAsync (app, config = {}) {
       query,
       services,
       securitys,
+      transaction,
       middlewares
     } = await globals.initialize({model: config.model})
 
@@ -53,6 +54,7 @@ async function createApplicationAsync (app, config = {}) {
     exports.raw = raw
     exports.models = models
     exports.query = query
+    exports.transaction = transaction
     exports.services = services
     exports.securitys = securitys
     exports.middlewares = exports.mws = middlewares
