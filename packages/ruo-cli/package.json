@@ -1,6 +1,6 @@
 {
   "name": "ruo-cli",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "description": "Command line utility for ruo projects",
   "bin": {
     "ruo": "./dist/cli.js"
@@ -30,7 +30,7 @@
   "author": "zhongchiyu@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "ruo": "^1.5.8",
+    "ruo": "^1.5.9",
     "ruo-ui": "^1.4.12",
     "babel-cli": "^6.10.1",
     "babel-eslint": "^6.0.4",
