@@ -13,7 +13,7 @@
     async main() {
       const app = await ruo.createApplicationAsync()
 
-      app.use(ruo.restMiddleware())
+      app.use(ruo.getRestMiddleware())
 
       app.listen(8088)
     }
