@@ -1,6 +1,8 @@
 # ruo [![Build Status](https://travis-ci.org/ruojs/ruo.svg?branch=master)](https://travis-ci.org/ruojs/ruo)
 > Yet Another RESTful API framework
 
+<img src="https://dl.dropboxusercontent.com/s/flqj2b2ujf3iaon/ruo.png" width="255px" />
+
 ## Development
 
     npm install --global lerna@prerelease
