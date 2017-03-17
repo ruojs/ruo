@@ -23,12 +23,13 @@ exports.ResponseError = exports.HttpError = HttpError
 exports.ParameterError = ParameterError
 exports.translate = exports.utility = utility
 exports.parseAsync = parseAsync
-exports.logger = logger
+exports.log = exports.logger = logger
 exports.rc = rc
 exports.wrapRoute = utility.wrapRoute
 exports.wrapMiddleware = utility.wrapMiddleware
 exports.DataTypes = Sequelize.DataTypes
 exports.QueryTypes = Sequelize.QueryTypes
+exports.getRestMiddleware = getRestMiddleware
 
 async function createApplicationAsync (app, config = {}) {
   try {
@@ -75,12 +76,19 @@ async function createApplicationAsync (app, config = {}) {
   }
 }
 
-function getRestMiddleware ({api, middlewares, errorHandler} = {}) {
-  if (!middlewares) {
-    load()
-  }
-
+function getRestMiddleware ({api, middlewares, swagger, errorHandler} = {}) {
   const router = Router()
+
+  if (!api || !middlewares) {
+    load(swagger)
+      .then(({api, middlewares}) => {
+        router.use(getRestMiddleware({api, middlewares, errorHandler}))
+      }).catch((err) => {
+        console.log(err.stack) // eslint-disable-line
+        process.exit(1)
+      })
+    return router
+  }
 
   //
   // Response pipeline

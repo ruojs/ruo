@@ -1,0 +1,22 @@
+swagger: "2.0"
+info:
+  version: '0.0.0'
+  title: Yet another Ruo project
+# during dev, should point to your local machine
+host: 'localhost:8000'
+# basePath prefixes all resource paths
+basePath: /api
+schemes:
+  # tip: remove http to make production-grade
+  - ws
+  - wss
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+  - application/x-www-form-urlencoded
+  - multipart/form-data
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
