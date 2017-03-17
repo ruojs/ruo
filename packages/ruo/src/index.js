@@ -9,8 +9,8 @@ const utility = require('./utility')
 const Pipeline = require('./pipeline')
 const mws = require('./middleware')
 const logger = require('./logger')
-const globals = require('./globals')
-const blueprint = require('./blueprint')
+const load = require('./load')
+const createModelAsync = require('./model')
 const {parseAsync} = require('./swagger')
 const {HttpError, ParameterError} = require('./error')
 const createWebSocketApplication = require('./ws')
@@ -37,32 +37,18 @@ async function createApplicationAsync (app, config = {}) {
       config = require('./config')
       exports.config = config
     }
+    exports.app = app
 
     logger.initialize(config.logger)
     const server = http.createServer(app)
-    const {
-      raw,
-      models,
-      query,
-      services,
-      securitys,
-      transaction,
-      middlewares
-    } = await globals.initialize({model: config.model})
+    const {api, middlewares, models} = await load(config.swagger, exports)
 
-    exports.app = app
-    exports.raw = raw
-    exports.models = models
-    exports.query = query
-    exports.transaction = transaction
-    exports.services = services
-    exports.securitys = securitys
-    exports.middlewares = exports.mws = middlewares
-
-    const api = await blueprint.initialize(config.swagger, models)
-    exports.api = api
     exports.createTestApplicationAsync = () => createTestApplicationAsync(app, api, config)
-    exports.getRestMiddleware = exports.restMiddleware = () => getRestMiddleware(api, securitys, config)
+    exports.getRestMiddleware = exports.restMiddleware = () => getRestMiddleware({api, middlewares, errorHandler: config.errorHandler})
+
+    if (config.model) {
+      await createModelAsync(config.model, models, exports)
+    }
 
     if (config.session) {
       app.use(createSession(config.session))
@@ -89,7 +75,11 @@ async function createApplicationAsync (app, config = {}) {
   }
 }
 
-function getRestMiddleware (api, securitys, config) {
+function getRestMiddleware ({api, middlewares, errorHandler} = {}) {
+  if (!middlewares) {
+    load()
+  }
+
   const router = Router()
 
   //
@@ -127,7 +117,7 @@ function getRestMiddleware (api, securitys, config) {
   // request validation
   router.use(mws.validation.request())
   // security handler
-  router.use(mws.security(api, securitys))
+  router.use(mws.security(api, middlewares))
   // dynamic swagger defined route
   router.use(mws.debug.preHandler())
   router.use(api.basePathPrefix, mws.api(api))
@@ -138,7 +128,7 @@ function getRestMiddleware (api, securitys, config) {
   })
 
   // error handling
-  router.use(api.basePathPrefix, mws.errorHandler(api, config.errorHandler))
+  router.use(api.basePathPrefix, mws.errorHandler(api, errorHandler))
 
   return router
 }

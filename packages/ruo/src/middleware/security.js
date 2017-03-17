@@ -4,7 +4,7 @@ const {forEachOperation} = require('../utility')
 
 const BINDING_KEY = '__security_middleware__'
 
-module.exports = (api, securitys) => {
+module.exports = (api, middlewares) => {
   const definition = api.definition
   // pre-bind operation to security middleware
   forEachOperation(definition, (path, method, operationDef) => {
@@ -37,7 +37,8 @@ module.exports = (api, securitys) => {
       if (index === securityHandlers.length) {
         return done(err)
       }
-      let securityHandler = securitys[securityHandlers[index]]
+      // TODO: support addtional arguments for security middleware
+      let securityHandler = middlewares[securityHandlers[index]]()
       index = index + 1
       securityHandler(req, res, next)
     }
