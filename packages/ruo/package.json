@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/upyun/ruo/tree/master/packages/ruo"
+    "url": "https://github.com/ruojs/ruo/tree/master/packages/ruo"
   },
   "files": [
     "dist",

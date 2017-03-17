@@ -1,4 +1,4 @@
-# ruo [![Build Status](https://travis-ci.org/upyun/ruo.svg?branch=master)](https://travis-ci.org/upyun/ruo)
+# ruo [![Build Status](https://travis-ci.org/ruojs/ruo.svg?branch=master)](https://travis-ci.org/ruojs/ruo)
 > Yet Another RESTful API framework
 
 ## Development

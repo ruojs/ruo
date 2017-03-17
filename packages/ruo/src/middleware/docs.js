@@ -34,6 +34,8 @@ module.exports = (definition) => {
 
     // return full spec definition
     router.get(rc.specPath, (req, res) => {
+      res.header('Access-Control-Allow-Origin', req.headers.origin)
+      res.header('Access-Control-Allow-Credentials', 'true')
       res.send(patternPropertiesToProperties(_.clone(definition)))
     })
 

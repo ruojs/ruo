@@ -11,7 +11,14 @@ const utility = require('../utility')
 module.exports = parseAsync
 
 async function parseAsync ({root = rc.target, dynamicDefinition = {}} = {}) {
-  const definition = YAML.load(fs.readFileSync(root + '/spec/swagger.yaml'))
+  let definition
+  try {
+    fs.statSync(root + '/spec/swagger.yaml')
+    definition = YAML.load(fs.readFileSync(path.join(root, '/spec/swagger.yaml')))
+  } catch (err) {
+    // use default swagger.yaml file
+    definition = YAML.load(fs.readFileSync(path.join(__dirname, '/swagger.yaml')))
+  }
   definition.paths = glob.sync(`**/*${rc.suffix.spec}`, {cwd: root}).sort().reduce((paths, file) => {
     const location = path.join(root, file)
     const yaml = YAML.load(fs.readFileSync(location, 'utf8'))
