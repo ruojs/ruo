@@ -17,7 +17,7 @@ export default class Sidebar extends React.Component {
     // group operations by resources (tag)
     const {spec: {tags, paths}} = props
 
-    let resources = _.clone(tags)
+    let resources = _.clone(tags || [{name: 'api', description: 'Default category'}])
     let map = {}
     resources.forEach((tag) => {
       map[tag.name] = tag
@@ -26,7 +26,7 @@ export default class Sidebar extends React.Component {
 
     _.forEach(paths, (operations) => {
       _.forEach(operations, (operation) => {
-        const tagName = operation.tags[0]
+        const tagName = _.get(operation, ['tags', 0], 'api')
         if (!map[tagName]) {
           console.error(`${tagName} in ${operation.method} ${operation.path} not defined`)
           return
@@ -57,7 +57,7 @@ export default class Sidebar extends React.Component {
     }
 
     return {
-      resource: paths[path][method].tags[0],
+      resource: _.get(paths, [path, method, 'tags', 0], 'api'),
       operation: method + '_' + path
     }
   }
