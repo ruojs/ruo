@@ -1,6 +1,6 @@
 {
   "name": "ruo-ui",
-  "version": "1.4.12",
+  "version": "1.5.10",
   "description": "Yet another swagger html renderer",
   "main": "dist/index.js",
   "scripts": {
