@@ -6,7 +6,7 @@ const debug = require('debug')('ruo')
 function loadStaticConfig () {
   const config = rc('ruo', {
     name: 'ruo',
-    source: 'src',
+    source: '.',
     exec: 'node',
     shadow: false,
     specPath: '/',
