@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/upyun/ruo/tree/master/packages/ruo-ui"
+    "url": "https://github.com/ruojs/ruo/tree/master/packages/ruo-ui"
   },
   "keywords": [
     "ruo"
