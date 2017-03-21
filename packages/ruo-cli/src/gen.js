@@ -23,7 +23,7 @@ async function main () {
     code: [],
     test: []
   }
-  let uris = _.map(spec.paths, (d, uri) => uri)
+  let uris = _.map(spec.paths, (d, uri) => uri.trim())
 
   uris.forEach((uri) => {
     // 添加code.js文件
