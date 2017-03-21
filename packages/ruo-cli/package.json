@@ -1,6 +1,6 @@
 {
   "name": "ruo-cli",
-  "version": "1.5.10",
+  "version": "1.5.11",
   "description": "Command line utility for ruo projects",
   "bin": {
     "ruo": "./dist/cli.js"
