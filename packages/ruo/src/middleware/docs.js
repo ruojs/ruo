@@ -1,7 +1,6 @@
 const joinPath = require('path').join
 
 const Router = require('router')
-const cors = require('cors')
 const serveStatic = require('serve-static')
 const _ = require('lodash')
 
@@ -30,8 +29,6 @@ const index = `
 module.exports = (definition) => {
   const router = Router()
   if (rc.env !== 'production') {
-    router.use(cors())
-
     // return full spec definition
     router.get(rc.specPath, (req, res) => {
       res.header('Access-Control-Allow-Origin', req.headers.origin)
