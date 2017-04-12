@@ -67,6 +67,7 @@ function createWebSocketApplication (server, api, options) {
     let currentRoom
     res.join = (room) => {
       currentRoom = room
+      return this
     }
     res.broadcast = (body, room) => {
       room = room || currentRoom
@@ -77,6 +78,7 @@ function createWebSocketApplication (server, api, options) {
         body
       }
       req.io.to(room).emit(`${req.method} ${api.basePathPrefix + req.url}`, res)
+      return this
     }
     next()
   }

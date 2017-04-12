@@ -38,6 +38,7 @@ function MockRes (req, envelope, basePathPrefix) {
       const res = this.__getResponse__(body)
       room = room || req.session.room
       req.io.to(room).emit(`${req.method} ${basePathPrefix + req.url}`, res)
+      return this
     },
     json (body) {
       const res = this.__getResponse__(body)
