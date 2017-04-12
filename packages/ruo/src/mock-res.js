@@ -4,7 +4,7 @@ const STATUS_CODES = require('http').STATUS_CODES
 // NOTE: cant use prototype to create MockRes class because [express will override res.__proto__](https://github.com/expressjs/express/blob/abd1de73c14985c884d11fb35aff5f4b17381e23/lib/middleware/init.js#L28)
 function MockRes (req, envelope, basePathPrefix) {
   const headers = {}
-  let broadcast = false
+
   return {
     setHeader (name, value) {
       headers[name.toLowerCase()] = value
@@ -34,26 +34,27 @@ function MockRes (req, envelope, basePathPrefix) {
       req.session.room = room
       return this
     },
-    broadcast () {
-      broadcast = true
-      return this
+    broadcast (body, room) {
+      const res = this.__getResponse__(body)
+      room = room || req.session.room
+      req.io.to(room).emit(`${req.method} ${basePathPrefix + req.url}`, res)
     },
     json (body) {
-      const res = {
+      const res = this.__getResponse__(body)
+      const reply = [envelope, res]
+      req.socket.emit('rep', reply)
+    },
+    send (body) {
+      this.json(body)
+    },
+
+    __getResponse__ (body) {
+      return {
         status: this.statusCode,
         statusMessage: this.statusMessage,
         headers: headers,
         body
       }
-      const reply = [envelope, res]
-      req.socket.emit('rep', reply)
-
-      if (broadcast) {
-        req.io.to(req.session.room).emit(`${req.method} ${basePathPrefix + req.url}`, res)
-      }
-    },
-    send (body) {
-      this.json(body)
     }
   }
 }

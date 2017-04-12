@@ -18,6 +18,7 @@ function createWebSocketApplication (server, api, options) {
   const io = require('socket.io')(server, {path: options.path})
   const wsapp = express()
   wsapp.io = io
+  wsapp.extendMiddleware = extendMiddleware
 
   if (options.session) {
     if (options.session.redis) {
@@ -59,6 +60,26 @@ function createWebSocketApplication (server, api, options) {
       })
     })
   })
+
+  // bind websocket similar api to request and response object
+  function extendMiddleware (req, res, next) {
+    req.io = io
+    let currentRoom
+    res.join = (room) => {
+      currentRoom = room
+    }
+    res.broadcast = (body, room) => {
+      room = room || currentRoom
+      const res = {
+        status: this.statusCode,
+        statusMessage: this.statusMessage,
+        headers: this.headers,
+        body
+      }
+      req.io.to(room).emit(`${req.method} ${api.basePathPrefix + req.url}`, res)
+    }
+    next()
+  }
 
   return wsapp
 }

@@ -59,6 +59,7 @@ async function createApplicationAsync (app, config = {}) {
       const wsapp = createWebSocketApplication(server, api, config.ws)
       app.wsapp = wsapp
       exports.wsapp = wsapp
+      app.use(wsapp.extendMiddleware)
       // TODO: find a better way to mount handle in the end
       setImmediate(() => {
         wsapp.use(exports.getRestMiddleware())
