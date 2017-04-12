@@ -5,7 +5,7 @@
 
 ## Development
 
-    npm install --global lerna@prerelease
+    npm install --global lerna@2.0.0-beta.30
     npm install
     lerna bootstrap
 
