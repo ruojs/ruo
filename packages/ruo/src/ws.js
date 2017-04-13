@@ -65,11 +65,11 @@ function createWebSocketApplication (server, api, options) {
   function extendMiddleware (req, res, next) {
     req.io = io
     let currentRoom
-    res.join = (room) => {
+    res.join = function (room) {
       currentRoom = room
       return this
     }
-    res.broadcast = (body, room) => {
+    res.broadcast = function (body, room) {
       room = room || currentRoom
       const res = {
         status: this.statusCode,
