@@ -79,7 +79,7 @@ function reportError (err, req) {
     let payload = req.method === 'GET' || req.method === 'DELETE' ? req.query : req.body
     payload = JSON.stringify(payload, null, '  ')
     payload = payload.slice(0, 1000)
-    logger.error(names[500], req.method, req.url, err.stack || err.message || err.name, {
+    logger.error(names[500], req.method, req.url, err.stack, err.message, err.name, err.errors, {
       headers: JSON.stringify(req.headers, null, '  '),
       payload: payload,
       method: req.method,
