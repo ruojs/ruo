@@ -115,7 +115,8 @@
     ],
     "globals": [
       "api",
-      "socket"
+      "socket",
+      "createSocket"
     ]
   }
 }

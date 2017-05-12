@@ -12,28 +12,34 @@ events.EventEmitter.defaultMaxListeners = Infinity
 
 const port = 10000 + parseInt(Math.random() * 10000, 10)
 
-function createTestApplicationAsync (app, api, config) {
+function createSocket (config) {
   return new Promise((resolve) => {
-    app.listen(port)
-
-    app = defaults(supertest(app))
-    app.on('request', (request) => {
-      const urlObject = url.parse(request.url)
-      urlObject.pathname = api.basePathPrefix + urlObject.pathname
-      request.url = url.format(urlObject)
-    })
-    global.api = app
-
     if (config.ws) {
-      global.socket = client(`http://localhost:${port}`, {path: config.ws.path})
+      const socket = client(`http://localhost:${port}`, {path: config.ws.path})
       initializeClientSocket(socket, {basePathPrefix: api.basePathPrefix})
       socket.on('connect', () => {
-        resolve()
+        resolve(socket)
       })
     } else {
       resolve()
     }
   })
+}
+
+function createTestApplicationAsync (app, api, config) {
+  app.listen(port)
+
+  app = defaults(supertest(app))
+  app.on('request', (request) => {
+    const urlObject = url.parse(request.url)
+    urlObject.pathname = api.basePathPrefix + urlObject.pathname
+    request.url = url.format(urlObject)
+  })
+  global.api = app
+
+  const _createSocket = createSocket.bind(null, config)
+  global.createSocket = _createSocket
+  return _createSocket().then((socket) => { global.socket = socket })
 }
 
 module.exports = createTestApplicationAsync

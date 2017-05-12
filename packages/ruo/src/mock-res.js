@@ -31,12 +31,10 @@ function MockRes (req, envelope, basePathPrefix) {
 
     join (room) {
       req.socket.join(room)
-      req.session.room = room
       return this
     },
     broadcast (body, room) {
       const res = this.__getResponse__(body)
-      room = room || req.session.room
       req.io.to(room).emit(`${req.method} ${basePathPrefix + req.url}`, res)
       return this
     },
