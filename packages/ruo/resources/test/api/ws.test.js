@@ -15,4 +15,29 @@ describe('ws', () => {
     const res = await socket.request({url: '/ws', method: 'POST', body: message})
     expect(res.body).to.eql(message)
   })
+
+  it('should able to send private message', async () => {
+    const anotherSocket = await createSocket()
+    const message = {message: 'world'}
+    socket.request({url: '/ws', method: 'PUT', body: message})
+    let count = 0
+    socket.on('PUT /ws', (res) => {
+      expect(res.body).to.eql(message)
+      count++
+    })
+    anotherSocket.on('PUT /ws', (res) => {
+      expect(res.body).to.eql(message)
+      count++
+    })
+    await delay()
+    expect(count).to.eql(1)
+  })
 })
+
+function delay () {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('hello world')
+    }, 100)
+  })
+}

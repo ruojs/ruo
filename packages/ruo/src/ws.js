@@ -33,6 +33,12 @@ function createWebSocketApplication (server, api, options) {
   }
 
   io.on('connection', (socket) => {
+    const session = socket.handshake.session
+    // join sid and userId to allow send message to particular socket
+    socket.join(`session ${session.id}`)
+    // TODO: custom userId field?
+    socket.join(`user ${session.userId}`)
+
     socket.on('req', (message) => {
       let [envelope, {method = 'GET', url, headers = {}, query, body}] = message
       headers = _.assign({'content-type': 'application/json'}, socket.handshake.headers, headers)
@@ -41,7 +47,7 @@ function createWebSocketApplication (server, api, options) {
         url,
         headers,
         // arbitrary properties:
-        session: socket.handshake.session,
+        session,
         ip: socket.handshake.headers['x-forwarded-for'] || socket.handshake.address,
         query,
         body,
@@ -59,18 +65,18 @@ function createWebSocketApplication (server, api, options) {
         logger.warn('WebSocket no matching handler')
       })
     })
+
+    // NOTE: we cant listen to `join` event because normally sensitive message will broadcasted and `join` action
+    // should have some sort of authentications.
   })
 
   // bind websocket similar api to request and response object
   function extendMiddleware (req, res, next) {
     req.io = io
-    let currentRoom
     res.join = function (room) {
-      currentRoom = room
       return this
     }
     res.broadcast = function (body, room) {
-      room = room || currentRoom
       const res = {
         status: this.statusCode,
         statusMessage: this.statusMessage,

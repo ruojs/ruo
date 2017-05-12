@@ -8,7 +8,7 @@ describe('utility', () => {
     let next
     let middleware
 
-    const generator = function *(req, res) { return yield delay(1) }
+    const generator = function * (req, res) { return yield delay(1) }
     next = sinon.spy()
     middleware = utility.wrapMiddleware(generator)
     middleware({}, {}, next)
@@ -27,7 +27,7 @@ describe('utility', () => {
     let next
     let middleware
 
-    const generator = function *(req, res) { return yield delay(1) }
+    const generator = function * (req, res) { return yield delay(1) }
     next = sinon.spy()
     middleware = utility.wrapRoute(generator)
     middleware({}, {}, next)
