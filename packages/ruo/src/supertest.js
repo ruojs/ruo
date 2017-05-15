@@ -12,7 +12,7 @@ events.EventEmitter.defaultMaxListeners = Infinity
 
 const port = 10000 + parseInt(Math.random() * 10000, 10)
 
-function createSocket (config) {
+function createSocket (api, config) {
   return new Promise((resolve) => {
     if (config.ws) {
       const socket = client(`http://localhost:${port}`, {path: config.ws.path})
@@ -37,7 +37,7 @@ function createTestApplicationAsync (app, api, config) {
   })
   global.api = app
 
-  const _createSocket = createSocket.bind(null, config)
+  const _createSocket = createSocket.bind(null, api, config)
   global.createSocket = _createSocket
   return _createSocket().then((socket) => { global.socket = socket })
 }
