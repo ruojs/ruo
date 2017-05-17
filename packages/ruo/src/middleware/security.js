@@ -3,6 +3,7 @@ const _ = require('lodash')
 const {forEachOperation} = require('../utility')
 
 const BINDING_KEY = '__security_middleware__'
+const HANDLER_NAME = '__name__'
 
 module.exports = (api, middlewares) => {
   const definition = api.definition
@@ -15,7 +16,9 @@ module.exports = (api, middlewares) => {
     const securityDefinitions = definition.securityDefinitions
     let securityHandlers = securitys.map((security) => {
       security = Object.keys(security)[0]
-      return securityDefinitions[security]['x-securityHandler']
+      const handler = middlewares[securityDefinitions[security]['x-securityHandler']]
+      handler[HANDLER_NAME] = security
+      return handler
     })
     securityHandlers = _.uniq(securityHandlers)
     operationDef[BINDING_KEY] = securityHandlers
@@ -31,6 +34,7 @@ module.exports = (api, middlewares) => {
     const next = (err) => {
       // fast return on first successful authentication
       if (index !== 0 && !err) {
+        req.security = securityHandlers[index - 1][HANDLER_NAME]
         return done()
       }
       // return last authentication failure
@@ -38,7 +42,7 @@ module.exports = (api, middlewares) => {
         return done(err)
       }
       // TODO: support addtional arguments for security middleware
-      let securityHandler = middlewares[securityHandlers[index]]()
+      let securityHandler = securityHandlers[index]()
       index = index + 1
       securityHandler(req, res, next)
     }
