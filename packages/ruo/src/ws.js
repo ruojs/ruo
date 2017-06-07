@@ -83,7 +83,7 @@ function createWebSocketApplication (server, api, options) {
         headers: this.headers,
         body
       }
-      req.io.to(room).emit(`${req.method} ${api.basePathPrefix + req.url}`, res)
+      req.io.to(room).emit(`${req.method} ${api.basePathPrefix + req.path}`, res)
       return this
     }
     next()
