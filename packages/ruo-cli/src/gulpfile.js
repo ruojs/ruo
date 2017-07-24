@@ -143,7 +143,7 @@ gulp.task('build-watch', ['cached-build'], () => {
       let ext = path.extname(vinyl.path)
       if (ext === '.js') {
         compile(vinyl.path, 'change')
-      } else {
+      } else if (ext === '.yaml') {
         copy(vinyl.path)
       }
     })
