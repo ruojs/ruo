@@ -26,7 +26,7 @@ logger.accesslogStream = {
 
 // lazy initialize logger transports
 // https://github.com/winstonjs/winston/blob/master/docs/transports.md
-logger.initialize = ({name, file, logstash, sentry} = {}) => {
+logger.initialize = ({name, file, logstash, sentry, stdout} = {}) => {
   name = name || HOSTNAME
   const env = rc.env
 
@@ -35,7 +35,8 @@ logger.initialize = ({name, file, logstash, sentry} = {}) => {
     prettyPrint: true,
     colorize: true
   })
-  if (env === 'development' || env === 'test') {
+
+  if (env === 'development' || env === 'test' || stdout) {
     logger.add(consoleTransport, null, true)
   }
 
@@ -51,6 +52,7 @@ logger.initialize = ({name, file, logstash, sentry} = {}) => {
       maxFiles: 1
       // datePattern: '.MM',
     })
+
     if (env === 'development' || env === 'production') {
       logger.add(fileTransport, null, true)
     }
