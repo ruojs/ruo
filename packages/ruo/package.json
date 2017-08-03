@@ -1,6 +1,6 @@
 {
   "name": "ruo",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "RESTful api framework for Nodejs",
   "main": "dist/index.js",
   "repository": {
@@ -33,7 +33,7 @@
     "path-to-regexp": "^1.6.0",
     "rc": "^1.1.6",
     "router": "^1.1.4",
-    "ruo-ui": "^1.5.10",
+    "ruo-ui": "^1.6.1",
     "sequelize": "^3.30.2",
     "serve-static": "^1.11.1",
     "shimmer": "^1.1.0",
