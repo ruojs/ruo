@@ -16,7 +16,11 @@ async function createModelAsync (modelConfig, models, globals) {
   })
 
   _.forEach(models, (model, modelName) => {
-    model.unshift(modelName)
+    if (Array.isArray(model)) {
+      model.unshift(modelName)
+    } else {
+      model = [modelName, model]
+    }
     sequelize.define.apply(sequelize, model)
   })
   globals.models = sequelize.models
