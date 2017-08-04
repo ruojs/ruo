@@ -71,6 +71,7 @@
     "eslint-plugin-babel": "^3.2.0",
     "mocha": "^3.0.2",
     "mock-fs": "^3.12.1",
+    "mysql": "^2.14.1",
     "nyc": "^7.0.0",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
