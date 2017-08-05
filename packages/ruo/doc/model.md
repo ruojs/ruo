@@ -84,4 +84,4 @@ ruo.transaction(transaction => {
 
 ### TODO
 
-[ ] 支持配置多个数据库链接
+- [ ] 支持配置多个数据库链接
