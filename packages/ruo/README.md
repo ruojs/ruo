@@ -10,7 +10,7 @@
 
     const ruo = require('ruo');
 
-    async main() {
+    async function main() {
       const app = await ruo.createApplicationAsync()
 
       app.use(ruo.getRestMiddleware())
