@@ -29,6 +29,8 @@ Availble commands:
   * gen
   * test, t
   * cover, c
+  * doc
+  * spec
     `)
   process.exit(0)
 }
@@ -41,7 +43,7 @@ process.chdir(path.dirname(rc.config))
 
 const command = argv._[0]
 if (['doc', 'spec', 'gen'].indexOf(command) !== -1) {
-  require(`./${command}`)()
+  require(`./${command}`)(argv)
 } else {
   const gulp = require('gulp')
   require('./gulpfile')

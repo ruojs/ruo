@@ -11,7 +11,7 @@ const {rc, parseAsync} = require('ruo')
 
 const {filterByFn} = require('./helpers')
 
-module.exports = () => {
+module.exports = (argv) => {
   const DOCS = rc.doc
   const DEST = path.join(rc.target, 'doc')
 
@@ -21,6 +21,11 @@ module.exports = () => {
   mkdirp.sync(DEST)
 
   _.forEach(DOCS, (tags, name) => {
+    let opts = Object.assign({}, argv)
+    if (!Array.isArray(tags) && typeof tags === 'object') {
+      opts = Object.assign(opts, tags)
+      tags = opts.tags
+    }
     // TODO: fix missing `rc.swagger`
     parseAsync({root: rc.source}).then((spec) => {
       selectTags(spec, tags)
@@ -40,6 +45,11 @@ module.exports = () => {
           return keys.length === 1 && privateSecurityList.indexOf(keys[0]) !== -1
         }
       }, spec)
+
+      if (opts.with) {
+        debug('only include defined ', opts.with)
+        selectWith(spec, opts.with)
+      }
 
       // filter x-private parameters, responses, securitys etc
       spec = filterByFn((obj) => obj && obj['x-private'] === true, spec)
@@ -65,6 +75,20 @@ module.exports = () => {
       _.forEach(resource, (operation, method) => {
         const hasTag = operation.tags.some((tag) => tags.indexOf(tag) !== -1)
         if (!hasTag) {
+          delete resource[method]
+        }
+      })
+      if (Object.keys(resource).length === 0) {
+        delete spec.paths[resourceName]
+      }
+    })
+  }
+
+  function selectWith (spec, particular) {
+    _.forEach(spec.paths, (resource, resourceName) => {
+      _.forEach(resource, (operation, method) => {
+        const defined = operation[particular]
+        if (!defined) {
           delete resource[method]
         }
       })
