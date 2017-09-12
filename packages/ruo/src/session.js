@@ -1,15 +1,15 @@
 const _ = require('lodash')
 const Session = require('express-session')
-const ioredis = require('ioredis')
+const Redis = require('ioredis')
 const RedisStore = require('connect-redis')(Session)
 
 module.exports = function createSession (session) {
   session = _.clone(session)
-
-  if (session.redis) {
+  const redis = session.redis
+  if (redis) {
     session.store = new RedisStore({
       prefix: session.prefix,
-      client: ioredis(session.redis)
+      client: Array.isArray(redis) ? new Redis.Cluster(redis, {scaleReads: 'slave'}) : new Redis(redis)
     })
     delete session.prefix
     delete session.redis
