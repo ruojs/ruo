@@ -1,5 +1,5 @@
 const express = require('express')
-const ioredis = require('ioredis')
+const Redis = require('ioredis')
 const ioSession = require('socket.io-express-session')
 const ioRedis = require('socket.io-redis')
 const MockReq = require('mock-req')
@@ -22,10 +22,12 @@ function createWebSocketApplication (server, api, options) {
 
   if (options.session) {
     if (options.session.redis) {
+      const redis = options.session.redis
+      const client = Array.isArray(redis) ? new Redis.Cluster(redis, {scaleReads: 'slave'}) : new Redis(redis)
       io.adapter(ioRedis({
         key: `${rc.name}:socket.io`,
-        pubClient: ioredis(options.session.redis),
-        subClient: ioredis(options.session.redis),
+        pubClient: client,
+        subClient: client,
         subEvent: 'messageBuffer'
       }))
     }
