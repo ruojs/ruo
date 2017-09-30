@@ -9,7 +9,7 @@ module.exports = function createSession (session) {
   if (redis) {
     session.store = new RedisStore({
       prefix: session.prefix,
-      client: Array.isArray(redis) ? new Redis.Cluster(redis, {scaleReads: 'slave'}) : new Redis(redis)
+      client: Array.isArray(redis) ? new Redis.Cluster(redis) : new Redis(redis)
     })
     delete session.prefix
     delete session.redis

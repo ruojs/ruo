@@ -23,11 +23,13 @@ function createWebSocketApplication (server, api, options) {
   if (options.session) {
     if (options.session.redis) {
       const redis = options.session.redis
-      const client = Array.isArray(redis) ? new Redis.Cluster(redis, {scaleReads: 'slave'}) : new Redis(redis)
+      // pub and sub shuold not use the same instance
+      const pubClient = Array.isArray(redis) ? new Redis.Cluster(redis) : new Redis(redis)
+      const subClient = Array.isArray(redis) ? new Redis.Cluster(redis) : new Redis(redis)
       io.adapter(ioRedis({
         key: `${rc.name}:socket.io`,
-        pubClient: client,
-        subClient: client,
+        pubClient: pubClient,
+        subClient: subClient,
         subEvent: 'messageBuffer'
       }))
     }
