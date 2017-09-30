@@ -23,7 +23,7 @@ function createWebSocketApplication (server, api, options) {
   if (options.session) {
     if (options.session.redis) {
       const redis = options.session.redis
-      // pub and sub can not use the same instance
+      // pub and sub shuold not use the same instance
       const pubClient = Array.isArray(redis) ? new Redis.Cluster(redis) : new Redis(redis)
       const subClient = Array.isArray(redis) ? new Redis.Cluster(redis) : new Redis(redis)
       io.adapter(ioRedis({
