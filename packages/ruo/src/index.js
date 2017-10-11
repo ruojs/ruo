@@ -143,10 +143,7 @@ function getRestMiddleware ({api, middlewares, swagger, errorHandler} = {}) {
 }
 
 process.on('unhandledRejection', function (reason, p) {
-  let err = new Error('Unhandled Promise rejection')
-  err.reason = reason
-  err.promise = p
   logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason)
   logger.error(reason.message, reason.stack)
-  throw err
+  throw reason
 })
