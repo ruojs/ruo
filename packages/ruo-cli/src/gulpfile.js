@@ -70,7 +70,7 @@ gulp.task('test', () => {
   helpers.execute('node', args, {NODE_ENV: 'test'})
 })
 gulp.task('c', ['cover'])
-gulp.task('cover', ['build'], () => {
+gulp.task('cover', () => {
   const MOCHA_OPTIONS = `--colors --timeout 20000 ${rc.cover.bootload}`.split(' ')
   const TEST_FILES = glob.sync(`${rc.target}/**/*${rc.suffix.test}`)
   let args = ['cover', '--report', 'text', '--report', 'html', '-i', `${rc.target}/**/*.js`, '-x', `${rc.target}/**/*${rc.suffix.test}`, './node_modules/.bin/_mocha', '--']
