@@ -1,10 +1,11 @@
-# ruo
+# ruo [![Build Status](https://travis-ci.org/ruojs/ruo.svg?branch=master)](https://travis-ci.org/ruojs/ruo)
 > Yet Another RESTful API framework
+
+<img src="https://dl.dropboxusercontent.com/s/flqj2b2ujf3iaon/ruo.png" width="255px" />
 
 ## Installation
 
     npm install --save ruo
-
 
 ## Usage
 
@@ -45,3 +46,8 @@ Commit
 * https://github.com/apigee-127/sway
 * https://github.com/krakenjs/swaggerize-express
 * https://github.com/jshttp/http-errors
+
+## Authors
+
+* [CatTail](https://github.com/cattail/)
+* [yuzi](https://github.com/yuzima)
