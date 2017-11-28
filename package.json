@@ -120,5 +120,8 @@
       "socket",
       "createSocket"
     ]
+  },
+  "engines": {
+    "node": ">=6.4"
   }
 }
