@@ -11,7 +11,6 @@ const mws = require('./middleware')
 const logger = require('./logger')
 const load = require('./load')
 const createModelAsync = require('./model')
-const {parseAsync} = require('./swagger')
 const {HttpError, ParameterError} = require('./error')
 const createWebSocketApplication = require('./ws')
 const createSession = require('./session')
@@ -22,7 +21,6 @@ exports.createApplicationAsync = createApplicationAsync
 exports.ResponseError = exports.HttpError = HttpError
 exports.ParameterError = ParameterError
 exports.translate = exports.utility = utility
-exports.parseAsync = parseAsync
 exports.log = exports.logger = logger
 exports.rc = rc
 exports.wrapRoute = utility.wrapRoute

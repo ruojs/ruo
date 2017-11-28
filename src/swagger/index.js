@@ -1,18 +1,29 @@
+
+const parser = require('ruo-swagger-parser')
 const parseUrl = require('url').parse
+const fs = require('fs')
 
 const _ = require('lodash')
 const {resolveRefs: resolve} = require('json-refs')
 
 const Path = require('./path')
-const parseAsync = require('./parse')
-const validateAsync = require('./definition-validator')
+const rc = require('../rc')
 
 class Swagger {
   static async createAsync (dynamicDefinition) {
-    const definition = await parseAsync({dynamicDefinition})
-    await validateAsync(definition)
-    const definitionResolved = (await resolve(definition)).resolved
-    return new Swagger(definitionResolved)
+    const root = rc.target
+    const cachePath = root + '/spec/swagger.json'
+    if (rc.useSwaggerCache && fs.existsSync(cachePath)) {
+      const cached = JSON.parse(fs.readFileSync(cachePath, 'utf8'))
+      return new Swagger(_.merge(cached, dynamicDefinition))
+    }
+    const definition = await parser(root,
+      '**/*' + rc.suffix.spec,
+      rc.suffix.spec,
+      'api',
+      rc.shadow
+    )
+    return new Swagger(_.merge(definition, dynamicDefinition))
   }
 
   constructor (definition) {
@@ -51,4 +62,3 @@ class Swagger {
 }
 
 exports.Swagger = Swagger
-exports.parseAsync = parseAsync

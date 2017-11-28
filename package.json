@@ -33,6 +33,7 @@
     "path-to-regexp": "^1.6.0",
     "rc": "^1.1.6",
     "router": "^1.1.4",
+    "ruo-swagger-parser": "0.1.1",
     "ruo-ui": "^1.6.1",
     "sequelize": "^3.30.2",
     "serve-static": "^1.11.1",
@@ -119,5 +120,8 @@
       "socket",
       "createSocket"
     ]
+  },
+  "engines": {
+    "node": ">=6.4"
   }
 }
