@@ -89,20 +89,14 @@ exports.getContentType = (headers) => {
   return type
 }
 
-exports.validateAgainstSchema = (validator, schema, value) => {
-  schema = _.cloneDeep(schema) // Clone the schema as z-schema alters the provided document
-
+exports.validateAgainstSchema = (validate, value) => {
   let response = {
     errors: [],
     warnings: []
   }
 
-  if (!validator.validate(value, schema)) {
-    response.errors = _.map(validator.getLastErrors(), function (err) {
-      normalizeError(err)
-
-      return err
-    })
+  if (!validate(value)) {
+    response.errors = validate.errors
   }
 
   return response
@@ -289,17 +283,4 @@ exports.convertValue = (schema, options, value) => {
   }
 
   return value
-}
-
-function normalizeError (obj) {
-  // Remove superfluous error details
-  if (_.isUndefined(obj.schemaId)) {
-    delete obj.schemaId
-  }
-
-  if (obj.inner) {
-    _.each(obj.inner, function (nObj) {
-      normalizeError(nObj)
-    })
-  }
 }

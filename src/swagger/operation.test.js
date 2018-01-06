@@ -62,7 +62,7 @@ describe('swagger/operation', () => {
     }])
     expect(errors).to.not.eql(undefined)
     expect(errors.length).to.eql(1)
-    expect(errors[0].code).to.eql('OBJECT_MISSING_REQUIRED_PROPERTY')
+    expect(errors[0].message).to.eql('should have required property \'name\'')
   })
 
   it('should convert value based on schema', () => {

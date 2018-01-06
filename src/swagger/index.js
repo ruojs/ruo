@@ -1,10 +1,8 @@
-
 const parser = require('ruo-swagger-parser')
 const parseUrl = require('url').parse
 const fs = require('fs')
 
 const _ = require('lodash')
-const {resolveRefs: resolve} = require('json-refs')
 
 const Path = require('./path')
 const rc = require('../rc')

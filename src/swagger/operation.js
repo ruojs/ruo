@@ -1,11 +1,11 @@
 const _ = require('lodash')
-const ZSchema = require('./z-schema')
+const getAjv = require('./z-schema')
 
 const Parameter = require('./parameter')
 const helpers = require('./helpers')
 
 // addtional __data__ field can used with isSwitchOn to return addtional data in unit test
-const validator = new ZSchema({assumeAdditional: ['__data__']})
+const ajv = getAjv()
 
 class Operation {
   constructor (method, definition, parent, pathToDefinition) {
@@ -20,6 +20,7 @@ class Operation {
     })
 
     this.consumes = this.consumes || parent.parent.consumes || []
+    this.validates = {}
   }
 
   validateContentType (contentType, supportedTypes) {
@@ -92,19 +93,24 @@ class Operation {
       return
     }
 
-    const realStatusCode = res ? String(res.statusCode) : 'default'
+    const maybeStatusCode = res ? String(res.statusCode) : 'default'
     let responseDef = _.find(this.definition.responses, (response, responseCode) => {
-      return responseCode === realStatusCode
+      return responseCode === maybeStatusCode
     })
-    responseDef = responseDef || this.definition.responses.default
+    let realStatusCode = maybeStatusCode
+    if (!responseDef) {
+      realStatusCode = 'default'
+      responseDef = this.definition.responses.default
+    }
+    this.validates[realStatusCode] = this.validates[realStatusCode] || ajv.compile(responseDef.schema)
 
     if (responseDef && typeof responseDef === 'object') {
       // clone original obj
       const data = helpers.prune(JSON.parse(JSON.stringify(obj)))
-      const valid = validator.validate(data, responseDef.schema)
+      const valid = this.validates[realStatusCode](data)
 
       if (!valid) {
-        return validator.getLastErrors()
+        return this.validates[realStatusCode].errors
       }
     }
   }
