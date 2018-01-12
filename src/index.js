@@ -41,6 +41,7 @@ async function createApplicationAsync (app, config = {}) {
     logger.initialize(config.logger)
     const server = http.createServer(app)
     const {api, middlewares, models} = await load(config.swagger, exports)
+    exports.api = api
 
     exports.createTestApplicationAsync = () => createTestApplicationAsync(app, api, config)
     exports.getRestMiddleware = exports.restMiddleware = () => getRestMiddleware({api, middlewares, errorHandler: config.errorHandler})
