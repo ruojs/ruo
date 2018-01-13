@@ -3163,10 +3163,6 @@ ruo-swagger-parser@0.2.0:
     lodash.isnumber "^3.0.3"
     z-schema "^3.19.0"
 
-ruo-ui@^1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/ruo-ui/-/ruo-ui-1.6.1.tgz#ba59e4c8954d00fbcf57c1c34a395e3d08248260"
-
 rx-lite@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-3.1.2.tgz#19ce502ca572665f3b647b10939f97fd1615f102"
