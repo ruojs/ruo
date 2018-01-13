@@ -117,8 +117,6 @@ function getRestMiddleware ({api, middlewares, swagger, errorHandler} = {}) {
   })
   // binding request context
   router.use(mws.context(rc.target + '/context'))
-  // setup swagger documentation
-  router.use(mws.docs(api.definition))
   router.use(mws.switch())
   // request & response logging
   router.use(mws.debug.request())
