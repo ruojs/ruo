@@ -78,7 +78,6 @@
     "standard": "^8.4.0"
   },
   "scripts": {
-    "postinstall": "node ./resources/postinstall.js",
     "prebuild": "rm -rf dist",
     "build": "babel src -d dist --copy-files",
     "prewatch": "rm -rf dist",
