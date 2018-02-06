@@ -14,7 +14,6 @@
 - `shadow` api 路径组织方式，详见 [shadow](#shadow)
 
 - `specPath` 输出 json 格式的文档定义路径，默认为 `/`，当访问该路径时将输出完整的文档定义
-- `docPath` 查看 `ruo-ui` 渲染的文档地址，默认为 `/doc`
 
 - `env` 默认为 `development`，可以用 `process.env.NODE_ENV` 代替
 - `lint` 配置代码风格检测目录，详见 [lint](#lint)

@@ -10,7 +10,6 @@ function loadStaticConfig () {
     exec: 'node',
     shadow: false,
     specPath: '/',
-    docPath: '/doc',
     target: undefined,
     watch: [],
     test: {

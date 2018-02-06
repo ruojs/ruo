@@ -34,7 +34,6 @@
     "rc": "^1.1.6",
     "router": "^1.1.4",
     "ruo-swagger-parser": "0.2.0",
-    "ruo-ui": "^1.6.1",
     "sequelize": "^3.30.2",
     "serve-static": "^1.11.1",
     "shimmer": "^1.1.0",
@@ -79,7 +78,6 @@
     "standard": "^8.4.0"
   },
   "scripts": {
-    "postinstall": "node ./resources/postinstall.js",
     "prebuild": "rm -rf dist",
     "build": "babel src -d dist --copy-files",
     "prewatch": "rm -rf dist",
@@ -108,7 +106,6 @@
   "standard": {
     "parser": "babel-eslint",
     "ignore": [
-      "resources/ruo-ui",
       "dist",
       "coverage"
     ],
