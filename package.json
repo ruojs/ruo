@@ -75,6 +75,10 @@
     "nyc": "^7.0.0",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
+    "@commitlint/cli": "^6.1.0",
+    "@commitlint/config-conventional": "^6.1.0",
+    "cz-conventional-changelog": "^2.1.0",
+    "husky": "^0.14.3",
     "standard": "^8.4.0"
   },
   "scripts": {
@@ -85,6 +89,7 @@
     "lint": "standard",
     "test": "NODE_ENV=test babel-node ./node_modules/.bin/_mocha --reporter spec $npm_package_options_mocha 'src/**/*.test.js' 'resources/test/**/*.test.js'",
     "cover": "NODE_ENV=test nyc --reporter html --reporter text ./node_modules/.bin/mocha $npm_package_options_mocha 'src/**/*.test.js' 'resources/test/**/*.test.js'",
+    "commitmsg": "commitlint -e $GIT_PARAMS",
     "prepublish": "npm run build"
   },
   "options": {
@@ -120,5 +125,10 @@
   },
   "engines": {
     "node": ">=6.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
