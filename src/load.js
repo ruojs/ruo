@@ -19,20 +19,23 @@ async function load (dynamicDefinition = {}, globals = {}) {
   ['model', 'service', 'middleware'].forEach((type) => {
     const name = type + 's'
     globals[name] = {}
+    const dir = joinPath(rc.target, type)
     try {
-      const dir = joinPath(rc.target, type)
-      fs.statSync(dir)
-      const modules = moder(dir, {
-        lazy: false,
-        filter: isTest
-      })
-      debug(type, Object.keys(modules))
-      globals[name] = modules
-    } catch (err) {
+      fs.statSync(dir);
+    } catch(err) {
       if (err.code !== 'ENOENT') {
         throw err
+      } else {
+        // NOTE: skip not exist autoload module
+        return;
       }
     }
+    const modules = moder(dir, {
+      lazy: false,
+      filter: isTest
+    })
+    debug(type, Object.keys(modules))
+    globals[name] = modules
   })
 
   // wrap normal middlewares
