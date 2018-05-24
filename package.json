@@ -34,7 +34,7 @@
     "rc": "^1.1.6",
     "router": "^1.1.4",
     "ruo-swagger-parser": "0.2.0",
-    "sequelize": "^3.30.2",
+    "sequelize": "^4.37.8",
     "serve-static": "^1.11.1",
     "shimmer": "^1.1.0",
     "socket.io": "^1.7.2",
@@ -54,6 +54,8 @@
     "z-schema": "^3.17.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^6.1.0",
+    "@commitlint/config-conventional": "^6.1.0",
     "babel-cli": "^6.10.1",
     "babel-eslint": "^6.0.4",
     "babel-plugin-istanbul": "^1.0.3",
@@ -68,17 +70,15 @@
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint-plugin-babel": "^3.2.0",
+    "husky": "^0.14.3",
     "mocha": "^3.0.2",
     "mock-fs": "4.4.2",
     "mysql": "^2.14.1",
     "nyc": "^7.0.0",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
-    "@commitlint/cli": "^6.1.0",
-    "@commitlint/config-conventional": "^6.1.0",
-    "cz-conventional-changelog": "^2.1.0",
-    "husky": "^0.14.3",
     "standard": "^8.4.0"
   },
   "scripts": {
