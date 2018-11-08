@@ -4,7 +4,7 @@ const Switch = require('./switch')()
 describe('switch', () => {
   it('should switch on test', (done) => {
     const req = {
-      get: function() {
+      get: function () {
         return JSON.stringify({
           test: true
         })
@@ -28,3 +28,4 @@ describe('switch', () => {
     })
   })
 })
+

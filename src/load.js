@@ -21,13 +21,13 @@ async function load (dynamicDefinition = {}, globals = {}) {
     globals[name] = {}
     const dir = joinPath(rc.target, type)
     try {
-      fs.statSync(dir);
-    } catch(err) {
+      fs.statSync(dir)
+    } catch (err) {
       if (err.code !== 'ENOENT') {
         throw err
       } else {
         // NOTE: skip not exist autoload module
-        return;
+        return
       }
     }
     const modules = moder(dir, {
