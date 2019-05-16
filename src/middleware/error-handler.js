@@ -86,7 +86,7 @@ function reportError (err, req) {
       payload: payload,
       method: req.method,
       url: req.url,
-      user: req.user
+      user: req.user && (req.user.toJSON ? req.user.toJSON() : req.user),
     })
   }
 }
