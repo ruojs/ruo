@@ -3,7 +3,6 @@ const rc = require('../rc')
 const debug = require('debug')(rc.name)
 
 const {names, HttpError} = require('../error')
-const logger = require('../logger')
 
 module.exports = {
   response () {
@@ -16,7 +15,7 @@ module.exports = {
             debug('original response', JSON.stringify(obj))
             throw new HttpError(names[500], 'InvalidResponse ' + JSON.stringify(error, null, '  '))
           } else {
-            logger.error('invalid response format', req.method, req.url, {
+            console.error('invalid response format', req.method, req.url, {
               response: JSON.stringify(obj, null, '  '),
               errors: JSON.stringify(error, null, '  '),
               method: req.method,

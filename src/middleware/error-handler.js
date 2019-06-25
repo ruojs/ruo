@@ -4,8 +4,6 @@ const _ = require('lodash')
 const debug = require('debug')(rc.name)
 const {names, messages, table} = require('../error')
 
-const logger = require('../logger')
-
 /**
  * NOTE: `next` parameter can't be removed because expressjs identify error handler by arguments.length.
  */
@@ -16,7 +14,7 @@ module.exports = (api, customErrorHandler = defaultErrorHandler) => {
 
   return (err, req, res, next) => { // eslint-disable-line
     if (rc.env === 'development') {
-      logger.error('ErrorHandler', req.method, req.path, err.stack || err)
+      console.error('ErrorHandler', req.method, req.path, err.stack || err)
     } else {
       debug('ErrorHandler', err.stack || err)
     }
@@ -81,12 +79,12 @@ function reportError (err, req) {
     if (payload) {
       payload = payload.slice(0, 1000)
     }
-    logger.error(names[500], req.method, req.url, err.stack, err.message, err.name, err.errors, {
+    console.error(names[500], req.method, req.url, err.stack, err.message, err.name, err.errors, {
       headers: JSON.stringify(req.headers, null, '  '),
       payload: payload,
       method: req.method,
       url: req.url,
-      user: req.user && (req.user.toJSON ? req.user.toJSON() : req.user),
+      user: req.user && (req.user.toJSON ? req.user.toJSON() : req.user)
     })
   }
 }

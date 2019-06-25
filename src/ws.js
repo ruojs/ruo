@@ -8,7 +8,6 @@ const _ = require('lodash')
 const MockRes = require('./mock-res')
 const rc = require('./rc')
 const createSession = require('./session')
-const logger = require('./logger')
 
 function createWebSocketApplication (server, api, options) {
   if (!options) {
@@ -63,10 +62,10 @@ function createWebSocketApplication (server, api, options) {
 
       wsapp(req, res, (err) => {
         if (err) {
-          return logger.error(err.stack)
+          return console.error(err.stack)
         }
 
-        logger.warn('WebSocket no matching handler')
+        console.warn('WebSocket no matching handler')
       })
     })
 
