@@ -6,7 +6,7 @@ const _ = require('lodash')
 const rc = require('./rc')
 
 //
-// Async handling utilitys
+// Async handling utilities
 //
 
 exports.wrapRoute = (fn) => {

@@ -5,14 +5,14 @@ module.exports = () => {
 
   return (req, res, next) => {
     const hasSwitch = req.get('x-switch')
-    const switchs = enabled && hasSwitch ? JSON.parse(hasSwitch) : {}
+    const switches = enabled && hasSwitch ? JSON.parse(hasSwitch) : {}
 
     req.isSwitchOff = (feature) => {
-      return switchs[feature] === false
+      return switches[feature] === false
     }
 
     req.isSwitchOn = (feature) => {
-      return switchs[feature] === true
+      return switches[feature] === true
     }
 
     next()

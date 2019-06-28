@@ -9,12 +9,12 @@ module.exports = (api, middlewares) => {
   const definition = api.definition
   // pre-bind operation to security middleware
   forEachOperation(definition, (path, method, operationDef) => {
-    let securitys = operationDef.security || []
+    let securities = operationDef.security || []
     const globalSecurity = definition.security || []
-    securitys = securitys.concat(globalSecurity)
+    securities = securities.concat(globalSecurity)
 
     const securityDefinitions = definition.securityDefinitions
-    let securityHandlers = securitys.map((security) => {
+    let securityHandlers = securities.map((security) => {
       security = Object.keys(security)[0]
       const handler = middlewares[securityDefinitions[security]['x-securityHandler']]
       handler[HANDLER_NAME] = security
@@ -41,7 +41,7 @@ module.exports = (api, middlewares) => {
       if (index === securityHandlers.length) {
         return done(err)
       }
-      // TODO: support addtional arguments for security middleware
+      // TODO: support additional arguments for security middleware
       let securityHandler = securityHandlers[index]()
       index = index + 1
       securityHandler(req, res, next)
