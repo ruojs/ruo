@@ -12,7 +12,7 @@ module.exports = {
 
         if (error) {
           if (rc.env === 'test' || rc.env === 'development') {
-            debug('original response', JSON.stringify(obj))
+            debug('original response', obj)
             throw new HttpError(names[500], 'InvalidResponse ' + JSON.stringify(error, null, '  '))
           } else {
             console.error('invalid response format', req.method, req.url, {
@@ -20,7 +20,7 @@ module.exports = {
               errors: JSON.stringify(error, null, '  '),
               method: req.method,
               url: req.url,
-              user: req.user
+              user: req.user && (req.user.toJSON ? req.user.toJSON() : req.user)
             })
           }
         }
