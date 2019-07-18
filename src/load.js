@@ -15,8 +15,8 @@ const {Swagger} = require('./swagger')
 
 async function load (dynamicDefinition = {}, globals = {}) {
   globals.raw = {};
-  // load model, service and middlewares
-  ['model', 'service', 'middleware'].forEach((type) => {
+  // load service and middlewares
+  ['service', 'middleware'].forEach((type) => {
     const name = type + 's'
     globals[name] = {}
     const dir = joinPath(rc.target, type)

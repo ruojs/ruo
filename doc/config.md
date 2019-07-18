@@ -16,20 +16,16 @@
 ```
 config
 ├── development
-│   ├── model.js
 │   └── redis.js
 ├── development.js
 ├── production
 │   └── redis.js
 ├── production.js
 ├── local.js
-├── model.js
 └── redis.js
 ```
 
 - 默认配置
-
-`config/model.js` 包含了默认的数据库配置，详见 [model.md](model.md)。`config/redis.js` 为默认 redis 配置，可能的包含如下代码：
 
 ```
 // config/redis.js
@@ -39,10 +35,6 @@ module.exports = {
   db: 1,
 }
 ```
-
-- 环境目录配置
-
-`config/development/model.js` 为开发环境下使用的数据库配置
 
 - 环境文件配置
 

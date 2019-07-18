@@ -2,14 +2,12 @@ const http = require('http')
 
 const express = require('express')
 const Router = require('router')
-const Sequelize = require('sequelize')
 
 const rc = require('./rc')
 const utility = require('./utility')
 const Pipeline = require('./pipeline')
 const mws = require('./middleware')
 const load = require('./load')
-const createModelAsync = require('./model')
 const {HttpError, ParameterError} = require('./error')
 const createWebSocketApplication = require('./ws')
 const createSession = require('./session')
@@ -23,8 +21,6 @@ exports.translate = exports.utility = utility
 exports.rc = rc
 exports.wrapRoute = utility.wrapRoute
 exports.wrapMiddleware = utility.wrapMiddleware
-exports.DataTypes = Sequelize.DataTypes
-exports.QueryTypes = Sequelize.QueryTypes
 exports.getRestMiddleware = getRestMiddleware
 
 async function createApplicationAsync (app, config = {}) {
@@ -37,15 +33,11 @@ async function createApplicationAsync (app, config = {}) {
     exports.app = app
 
     const server = http.createServer(app)
-    const {api, middlewares, models} = await load(config.swagger, exports)
+    const {api, middlewares} = await load(config.swagger, exports)
     exports.api = api
 
     exports.createTestApplicationAsync = () => createTestApplicationAsync(app, api, config)
     exports.getRestMiddleware = exports.restMiddleware = () => getRestMiddleware({api, middlewares, errorHandler: config.errorHandler})
-
-    if (config.model) {
-      await createModelAsync(config.model, models, exports)
-    }
 
     if (config.session) {
       app.use(createSession(config.session))

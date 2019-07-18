@@ -37,16 +37,13 @@
 
 此时，api 实现文件命名风格为 `xxx.code.js`，测试文件命名风格为 `xxx.test.js`，接口定义文件命名风格为 `xxx.spec.yaml`。`ruo` 在加载 api 相关代码时，通过该配置规则，匹配文件。
 
-其他代码，诸如 `Model`、`Serivce` 层代码，只需要对应的测试文件使用 `suffix.test` 定义的规则即可。一个完整的示例如下：
+其他代码，诸如 ``Serivce` 层代码，只需要对应的测试文件使用 `suffix.test` 定义的规则即可。一个完整的示例如下：
 
 ```
 |- api
   |- hello.code.js
   |- hello.spec.yaml
   |- hello.test.js
-|- model
-  |- user.js
-  |- user.test.js
 |- lib
   |- functions.js
   |- functions.test.js
