@@ -8,7 +8,6 @@ const rc = require('./rc')
 const utility = require('./utility')
 const Pipeline = require('./pipeline')
 const mws = require('./middleware')
-const logger = require('./logger')
 const load = require('./load')
 const createModelAsync = require('./model')
 const {HttpError, ParameterError} = require('./error')
@@ -21,7 +20,6 @@ exports.createApplicationAsync = createApplicationAsync
 exports.ResponseError = exports.HttpError = HttpError
 exports.ParameterError = ParameterError
 exports.translate = exports.utility = utility
-exports.log = exports.logger = logger
 exports.rc = rc
 exports.wrapRoute = utility.wrapRoute
 exports.wrapMiddleware = utility.wrapMiddleware
@@ -38,7 +36,6 @@ async function createApplicationAsync (app, config = {}) {
     }
     exports.app = app
 
-    logger.initialize(config.logger)
     const server = http.createServer(app)
     const {api, middlewares, models} = await load(config.swagger, exports)
     exports.api = api
