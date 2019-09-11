@@ -45,17 +45,21 @@ function createWebSocketApplication (server, api, options) {
     socket.on('req', (message) => {
       let [envelope, {method = 'GET', url, headers = {}, query, body}] = message
       headers = _.assign({'content-type': 'application/json'}, socket.handshake.headers, headers)
+
+      const ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address
+
       const req = new MockReq({
         method,
         url,
         headers,
         // arbitrary properties:
         session,
-        ip: socket.handshake.headers['x-forwarded-for'] || socket.handshake.address,
+        ip,
         query,
         body,
         io,
-        socket
+        socket,
+        connection: {remoteAddress: ip}
       })
 
       const res = MockRes(req, envelope, api.basePathPrefix)
