@@ -84,7 +84,6 @@
     "lint": "standard",
     "test": "NODE_ENV=test babel-node ./node_modules/.bin/_mocha --reporter spec $npm_package_options_mocha 'src/**/*.test.js' 'resources/test/**/*.test.js'",
     "cover": "NODE_ENV=test nyc --reporter html --reporter text ./node_modules/.bin/mocha $npm_package_options_mocha 'src/**/*.test.js' 'resources/test/**/*.test.js'",
-    "commitmsg": "commitlint -e $GIT_PARAMS",
     "prepublish": "npm run build"
   },
   "options": {
@@ -120,10 +119,5 @@
   },
   "engines": {
     "node": ">=6.4"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   }
 }
