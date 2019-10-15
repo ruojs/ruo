@@ -29,17 +29,13 @@ module.exports = (api, customErrorHandler = defaultErrorHandler) => {
 
     let data = getErrorData(err, req, globalErrorCodeTable)
     if (!data) {
-      err.name = names[500]
       data = {name: names[500]}
-    }
-
-    if (err.name === names[500]) {
-      reportError(err, req)
     }
 
     data.message = err.message || data.message || messages[500]
     data.status = err.status || data.status || 500
     data.field = err.field
+    data.error = err
     customErrorHandler(data, req, res)
   }
 }
@@ -70,18 +66,4 @@ function getErrorData (err, req, globalErrorCodeTable) {
   }
 
   return _.assign({name}, data)
-}
-
-function reportError (err, req) {
-  if (rc.env === 'production') {
-    let payload = req.method === 'GET' || req.method === 'DELETE' ? req.query : req.body
-    payload = JSON.stringify(payload, null, '  ')
-    console.error(names[500], req.method, req.url, err.stack, err.message, err.name, err.errors, {
-      headers: JSON.stringify(req.headers, null, '  '),
-      payload: payload,
-      method: req.method,
-      url: req.url,
-      user: req.user && (req.user.toJSON ? req.user.toJSON() : req.user)
-    })
-  }
 }

@@ -1,4 +1,5 @@
 const rc = require('../rc')
+const _ = require('lodash')
 
 const debug = require('debug')(rc.name)
 
@@ -15,12 +16,13 @@ module.exports = {
             debug('original response', obj)
             throw new HttpError(names[500], 'InvalidResponse ' + JSON.stringify(error, null, '  '))
           } else {
-            console.error('invalid response format', req.method, req.url, {
+            console.error({
+              label: 'invalid response format',
               response: JSON.stringify(obj, null, '  '),
               errors: JSON.stringify(error, null, '  '),
               method: req.method,
               url: req.url,
-              user: req.user && (req.user.toJSON ? req.user.toJSON() : req.user)
+              user: _.get(req, 'user.id')
             })
           }
         }
