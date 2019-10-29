@@ -34,7 +34,7 @@
     "rc": "^1.1.6",
     "router": "^1.1.4",
     "ruo-swagger-parser": "0.2.0",
-    "sequelize": "^3.30.2",
+    "sequelize": "^5.15.1",
     "serve-static": "^1.11.1",
     "shimmer": "^1.1.0",
     "socket.io": "^1.7.2",
