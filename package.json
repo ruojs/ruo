@@ -47,7 +47,7 @@
     "supertest": "^2.0.1",
     "uppercamelcase": "^1.1.0",
     "waterline": "^0.11.6",
-    "winston": "^2.2.0",
+    "winston": "^3.0.0",
     "winston-common-sentry": "^0.1.1",
     "winston-daily-rotate-file": "^1.2.0",
     "winston-logstash": "^0.2.11",
