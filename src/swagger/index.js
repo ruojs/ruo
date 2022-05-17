@@ -42,6 +42,8 @@ class Swagger {
   }
 
   getPath (url) {
+    // The / at the end will match successfully in the express routing rule base
+    url = url.replace(new RegExp(`${this.basePathPrefix}/{1,2}`), `${this.basePathPrefix}/`)
     return _.find(this.pathObjects, (pathObject) => {
       return _.isArray(pathObject.regexp.exec(url))
     })
