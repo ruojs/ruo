@@ -1,5 +1,5 @@
-const _ = require('lodash')
-const ZSchema = require('z-schema')
+const isNumber = require('lodash.isnumber')
+const Ajv = require('ajv')
 
 const validators = {}
 
@@ -8,21 +8,20 @@ function returnTrue () {
 }
 
 validators.int32 = validators.int64 = function (val) {
-  // z-schema seems to continue processing the format even when the type is known to be invalid so we must do a type
-  // check prior to validating this format.
-  return _.isNumber(val) && val % 1 === 0
+  return isNumber(val)
 }
 
-// These format validators will always return 'true' because they are already type valid and there are no constraints
-// on the format that would produce an invalid value.
 validators.byte = returnTrue
 validators.double = returnTrue
 validators.float = returnTrue
 validators.password = returnTrue
 
-// Add the custom validators
-_.each(validators, function (handler, name) {
-  ZSchema.registerFormat(name, handler)
-})
+module.exports = (options) => {
+  const ajv = new Ajv(options)
 
-module.exports = ZSchema
+  // Add the custom format validator
+  Object.keys(validators).forEach(function (name) {
+    ajv.addFormat(name, validators[name])
+  })
+  return ajv
+}

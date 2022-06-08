@@ -1,14 +1,12 @@
 const _ = require('lodash')
 const JsonRefs = require('json-refs')
-const ZSchema = require('./z-schema')
+const getAjv = require('./z-schema')
 
 const helpers = require('./helpers')
 
-const validator = new ZSchema({
-  breakOnFirstError: false,
-  ignoreUnknownFormats: true,
-  reportPathAsArray: true,
-  assumeAdditional: true
+const ajv = getAjv({
+  allErrors: process.env.NODE_ENV !== 'production',
+  unknownFormats: true
 })
 
 class ParameterValue {
@@ -86,7 +84,8 @@ class ParameterValue {
 
                 if (!skipValidation) {
                   // Validate against JSON Schema
-                  result = helpers.validateAgainstSchema(validator, parameterObject.schema, value)
+                  this.validate = this.validate || ajv.compile(parameterObject.schema)
+                  result = helpers.validateAgainstSchema(this.validate, value)
                 }
 
                 if (result.errors.length > 0) {

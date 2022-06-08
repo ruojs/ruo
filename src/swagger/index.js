@@ -1,4 +1,3 @@
-
 const parser = require('ruo-swagger-parser')
 const parseUrl = require('url').parse
 const fs = require('fs')
